@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ThemeProvider from "@/components/code/ThemeProvider";
+import { Toaster } from "sonner";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "EduVerse",
@@ -15,14 +17,17 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`poppins-regular`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
+        <Toaster />
+        <Providers>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </Providers>
       </body>
     </html>
   );

@@ -14,7 +14,24 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id String @id @default(uuid())
-  name String
+enum Role {
+  user
+  admin
 }
+
+model User {
+  id                        String     @id @default(uuid())
+  email                     String     @unique
+  firstName                 String
+  lastName                  String
+  password                  String
+  role                      Role?      @default(user)
+  emailVerified             Boolean    @default(false)
+  verificationCode          String?
+  verificationCodeExpiresAt String?
+  createdAt                 DateTime?  @default(now())
+  updatedAt                 DateTime?  @updatedAt
+  resetPasswordOtp           String?
+  resetPasswordOtpExpires    DateTime?
+}
+
