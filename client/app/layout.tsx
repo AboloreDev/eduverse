@@ -3,6 +3,7 @@ import "./globals.css";
 import ThemeProvider from "@/components/code/ThemeProvider";
 import { Toaster } from "sonner";
 import Providers from "./providers";
+import AuthProvider from "@/components/code/AuthProvider";
 
 export const metadata: Metadata = {
   title: "EduVerse",
@@ -19,14 +20,16 @@ export default function RootLayout({
       <body className={`poppins-regular`}>
         <Toaster />
         <Providers>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <AuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </AuthProvider>
         </Providers>
       </body>
     </html>

@@ -17,7 +17,6 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { loginSchema, registerUserSchema } from "../schemas/auth.schema";
 import { catchAsyncError } from "../utils/catchAsync";
 import AppError from "../utils/appError";
-import { sendVerificationEmail } from "../utils/emailSending";
 
 interface MyJwtPayload extends JwtPayload {
   userId: string;
@@ -32,7 +31,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
     where: { email: request.email },
   });
 
-  if (existingUser) return next(new AppError("Email already registered", 400));
+  if (existingUser) return next(new AppError("Email already exits", 400));
 
   const hashedPassword = await hashPassword(request.password, 12);
   const otp = generateVerificationCode();
@@ -44,15 +43,11 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
         lastName: request.lastName,
         email: request.email,
         password: hashedPassword,
-        verificationCode: otp,
-        verificationCodeExpiresAt: String(Date.now() + 24 * 60 * 60 * 1000),
       },
     });
 
     const accessToken = generateTokenAndSetCookie(res, user.id, user.role);
     const refreshToken = generateRefreshToken(res, user.id, user.role);
-
-    await sendVerificationEmail(user.email, otp);
 
     res.status(OK).json({
       success: true,

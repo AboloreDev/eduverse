@@ -5,14 +5,20 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import globalReducer from "./slice/globalSlice";
+import { authApi } from "./api/authApi";
 
 /* REDUX STORE */
-const rootReducer = combineReducers({});
+const rootReducer = combineReducers({
+  global: globalReducer,
+  [authApi.reducerPath]: authApi.reducer,
+});
 
 export const makeStore = () => {
   return configureStore({
     reducer: rootReducer,
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(authApi.middleware),
   });
 };
 

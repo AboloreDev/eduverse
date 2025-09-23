@@ -26,6 +26,10 @@ app.use(morgan("common"));
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
+app.get("/", (req, res) => {
+  res.status(OK).json({ status: "healthy" });
+});
+
 //Routes
 app.use("/api/v1/project/auth", authRoutes);
 app.use("/api/v1/project/user", userRoutes);
@@ -35,10 +39,6 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(globalErrorHandler);
-
-app.get("/", (req, res) => {
-  res.status(OK).json({ status: "healthy" });
-});
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`App is listening on Port ${PORT}`);
