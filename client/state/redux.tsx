@@ -7,18 +7,26 @@ import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import globalReducer from "./slice/globalSlice";
 import { authApi } from "./api/authApi";
+import { fileUploadController } from "./api/uploadApi";
+import { courseApi } from "./api/courseApi";
 
 /* REDUX STORE */
 const rootReducer = combineReducers({
   global: globalReducer,
   [authApi.reducerPath]: authApi.reducer,
+  [fileUploadController.reducerPath]: fileUploadController.reducer,
+  [courseApi.reducerPath]: courseApi.reducer,
 });
 
 export const makeStore = () => {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(authApi.middleware),
+      getDefaultMiddleware().concat(
+        authApi.middleware,
+        fileUploadController.middleware,
+        courseApi.middleware
+      ),
   });
 };
 

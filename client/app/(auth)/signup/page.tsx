@@ -59,7 +59,7 @@ const RegisterPage = () => {
         dispatch(setUser(response.data.user));
         localStorage.setItem("user", JSON.stringify(response.data.user));
         form.reset();
-        // router.push("/dashboard");
+        router.push("/");
       } else {
         toast.error("Something went wrong");
       }

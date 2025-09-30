@@ -168,3 +168,38 @@ export const logoutUser = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Registration failed: ${error.message}`, 500));
   }
 });
+
+export const healthCheck = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Test database connection
+    const startTime = Date.now();
+    await prisma.$queryRaw`SELECT 1`;
+    const dbResponseTime = Date.now() - startTime;
+
+    res.status(200).json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      database: {
+        status: "connected",
+        responseTime: `${dbResponseTime}ms`,
+      },
+      environment: process.env.NODE_ENV || "development",
+    });
+  } catch (error: any) {
+    console.error("Health check failed:", error);
+
+    res.status(503).json({
+      status: "unhealthy",
+      timestamp: new Date().toISOString(),
+      database: {
+        status: "disconnected",
+        error: error.message,
+      },
+      environment: process.env.NODE_ENV || "development",
+    });
+  }
+};

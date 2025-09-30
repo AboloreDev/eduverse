@@ -5,6 +5,8 @@ import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useAppDispatch } from "@/state/redux";
+import { clearUser } from "@/state/slice/globalSlice";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -14,28 +16,37 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const { data: userResponse, isLoading, isError } = useGetUserProfileQuery();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (isLoading) return;
 
     if (isError || !userResponse) {
       toast.error("Session expired. Please login again.");
-      router.push("/auth/login");
+      dispatch(clearUser());
+      localStorage.removeItem("user");
+      router.push("/login");
       return;
     }
 
-    const userRole = userResponse?.role;
+    // @ts-ignore
+    const userRole = userResponse?.user.role;
 
     // Block unauthorized access
-    if (pathname.startsWith("/dashboard/user") && userRole !== "user") {
+    if (pathname.startsWith("/user") && userRole !== "user") {
       toast.error("Access denied. User access only.");
-      router.push("/auth/login");
+      dispatch(clearUser());
+      localStorage.removeItem("user");
+      router.push("/login");
+
       return;
     }
 
-    if (pathname.startsWith("/dashboard/admin") && userRole !== "admin") {
+    if (pathname.startsWith("/admin") && userRole !== "admin") {
       toast.error("Access denied. Admin access only.");
-      router.push("/auth/login");
+      dispatch(clearUser());
+      localStorage.removeItem("user");
+      router.push("/login");
       return;
     }
   }, [userResponse, isLoading, isError, pathname, router]);

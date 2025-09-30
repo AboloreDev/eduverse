@@ -19,6 +19,17 @@ enum Role {
   admin
 }
 
+enum CourseLevel {
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum CourseStatus {
+  Draft
+  Published
+  Archived
+}
 model User {
   id                        String     @id @default(uuid())
   email                     String     @unique
@@ -33,6 +44,25 @@ model User {
   updatedAt                 DateTime?  @updatedAt
   resetPasswordOtp           String?
   resetPasswordOtpExpires    DateTime?
+  courses          Course[]
 }
 
+model Course {
+  id        String      @id @default(uuid())
+  title    String
+  description String
+  fileKey String
+  price Int
+  duration Int
+  level CourseLevel @default(Beginner)
+  category String
+  subDescription String
+  slug String @unique
+  status CourseStatus @default(Draft)
 
+  
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+  User       User?   @relation(fields: [userId], references: [id], onDelete:  Cascade)
+  userId     String?
+}

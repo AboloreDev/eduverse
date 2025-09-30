@@ -27,6 +27,8 @@ import {
 import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { setUser } from "@/state/slice/globalSlice";
 import { useSignOut } from "@/hooks/use-signout";
+import { ThemeToggle } from "./ThemeToggle";
+import { useGetUserProfileQuery } from "@/state/api/authApi";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -40,6 +42,7 @@ const Navbar = () => {
   const { handleLogout, logoutLoading } = useSignOut();
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.global.user);
+  const { data: userResponse, isLoading } = useGetUserProfileQuery();
 
   // Rehydrate user from localStorage when navbar mounts
   useEffect(() => {
@@ -64,6 +67,8 @@ const Navbar = () => {
       document.body.style.overflow = "auto";
     };
   }, [isMobileMenu]);
+
+  const dashboardRoute = user?.role === "admin" ? "/admin" : "/user";
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md shadow-sm prata-regular">
@@ -93,6 +98,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-4 uppercase">
           {user ? (
             <DropdownMenu>
+              <ThemeToggle />
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
@@ -117,7 +123,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
                     <LayoutDashboard size={10} />
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href={dashboardRoute}>Dashboard</Link>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -152,6 +158,7 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <>
+              <ThemeToggle />
               <Button size="sm" asChild>
                 <Link href="/login">Login</Link>
               </Button>
@@ -190,7 +197,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
                     <LayoutDashboard size={10} />
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href={dashboardRoute}>Dashboard</Link>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

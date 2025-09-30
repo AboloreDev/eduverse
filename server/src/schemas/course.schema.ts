@@ -1,24 +1,8 @@
 import z from "zod";
 
-export const courseLevels = ["Beginner", "Intermediate", "Advanced"] as const;
+const courseLevels = ["Beginner", "Intermediate", "Advanced"] as const;
 
-export const courseStatus = ["Draft", "Published", "Archived"] as const;
-
-export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-export type LoginFormData = z.infer<typeof loginSchema>;
-
-export const registerSchema = z.object({
-  firstName: z.string().min(1, "Name is required"),
-  lastName: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
-});
-
-export type RegisterFormData = z.infer<typeof registerSchema>;
+const courseStatus = ["Draft", "Published", "Archived"] as const;
 
 export const courseSchema = z.object({
   title: z
@@ -44,5 +28,3 @@ export const courseSchema = z.object({
   slug: z.string().min(1, "Slug is required"),
   status: z.enum(courseStatus),
 });
-
-export type CourseFormData = z.infer<typeof courseSchema>;
