@@ -1,18 +1,20 @@
 import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { ApiResponse } from "../types/authTypes";
+import { CourseResponse, editCourseRequest } from "../types/courseTypes";
+import { UploadCourseResponse } from "../types/uploadTypes";
 
 export const courseApi = createApi({
   baseQuery: baseQueryWithAuth,
   reducerPath: "courseApi",
   tagTypes: ["Courses", "User"],
   endpoints: (builder) => ({
-    fetchAllCourses: builder.query<ApiResponse<object>, void>({
+    fetchAllCourses: builder.query<CourseResponse<object>, void>({
       query: () => "/api/v1/project/courses/all",
       providesTags: ["Courses", "User"],
     }),
 
-    fetchSingleCourse: builder.query<ApiResponse<object>, string>({
+    fetchSingleCourse: builder.query<CourseResponse<object>, string>({
       query: (id) => `/api/v1/project/courses/${id}`,
       providesTags: ["Courses", "User"],
     }),
@@ -21,6 +23,15 @@ export const courseApi = createApi({
       query: (id) => `/api/v1/project/courses/${id}`,
       invalidatesTags: ["Courses", "User"],
     }),
+
+    editCourse: builder.mutation<CourseResponse<object>, editCourseRequest>({
+      query: ({ id, data }) => ({
+        url: `api/v1/project/courses/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Courses"],
+    }),
   }),
 });
 
@@ -28,4 +39,5 @@ export const {
   useDeleteSingleCourseMutation,
   useFetchAllCoursesQuery,
   useFetchSingleCourseQuery,
+  useEditCourseMutation,
 } = courseApi;

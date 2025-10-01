@@ -1,12 +1,12 @@
 "use client";
 
 import { useGetUserProfileQuery } from "@/state/api/authApi";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, usePathname } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { useAppDispatch } from "@/state/redux";
-import { clearUser } from "@/state/slice/globalSlice";
+import { useAppDispatch, useAppSelector } from "@/state/redux";
+import { clearUser, setUser } from "@/state/slice/globalSlice";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -15,55 +15,84 @@ interface ProtectedRouteProps {
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: userResponse, isLoading, isError } = useGetUserProfileQuery();
   const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.global.user);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+
+  const {
+    data: userResponse,
+    isLoading,
+    isError,
+    error,
+  } = useGetUserProfileQuery();
 
   useEffect(() => {
-    if (isLoading) return;
+    const checkAuth = () => {
+      if (isLoading) {
+        return;
+      }
 
-    if (isError || !userResponse) {
-      toast.error("Session expired. Please login again.");
-      dispatch(clearUser());
-      localStorage.removeItem("user");
-      router.push("/login");
-      return;
-    }
+      // CASE 3: API call failed or returned error
+      if (isError || !userResponse) {
+        const errorMessage = "Session expired. Please login again.";
+        toast.error(errorMessage);
+        dispatch(clearUser());
+        setIsCheckingAuth(false);
+        router.push("/login");
+        return;
+      }
 
-    // @ts-ignore
-    const userRole = userResponse?.user.role;
+      // CASE 5: Role-based access control
+      // @ts-ignore
+      const userRole = userResponse.user.role;
 
-    // Block unauthorized access
-    if (pathname.startsWith("/user") && userRole !== "user") {
-      toast.error("Access denied. User access only.");
-      dispatch(clearUser());
-      localStorage.removeItem("user");
-      router.push("/login");
+      // Check if user is trying to access wrong role's routes
+      if (pathname.startsWith("/user") && userRole !== "user") {
+        toast.error("Access denied. User access only.");
+        setIsCheckingAuth(false);
+        router.push("/login");
+        return;
+      }
 
-      return;
-    }
+      if (pathname.startsWith("/admin") && userRole !== "admin") {
+        toast.error("Access denied. Admin access only.");
+        setIsCheckingAuth(false);
+        router.push("/login");
+        return;
+      }
 
-    if (pathname.startsWith("/admin") && userRole !== "admin") {
-      toast.error("Access denied. Admin access only.");
-      dispatch(clearUser());
-      localStorage.removeItem("user");
-      router.push("/login");
-      return;
-    }
-  }, [userResponse, isLoading, isError, pathname, router]);
-  if (isLoading) {
+      // All checks passed
+      setIsCheckingAuth(false);
+    };
+
+    checkAuth();
+  }, [
+    userResponse,
+    isLoading,
+    isError,
+    error,
+    pathname,
+    router,
+    dispatch,
+    user,
+  ]);
+
+  // Show loading spinner while checking authentication
+  if (isCheckingAuth || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 />
+        <Loader2 className="animate-spin h-10 w-10 text-blue-500" />
       </div>
     );
   }
 
-  // Show error if auth failed
+  // Don't render if auth check failed
   if (isError || !userResponse) {
     return null;
   }
 
-  return <div>{children}</div>;
+  // All checks passed - render protected content
+  return <>{children}</>;
 };
 
 export default ProtectedRoute;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLazyRefreshTokenQuery } from "@/state/api/authApi";
+import { useRefreshTokenMutation } from "@/state/api/authApi";
 import { useAppDispatch } from "@/state/redux";
 import { clearUser } from "@/state/slice/globalSlice";
 import { Loader2 } from "lucide-react";
@@ -9,7 +9,7 @@ import React, { useEffect } from "react";
 import { toast } from "sonner";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [refreshToken, { isLoading }] = useLazyRefreshTokenQuery();
+  const [refreshToken, { isLoading }] = useRefreshTokenMutation();
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -21,12 +21,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         toast.error("Token refresh failed");
         dispatch(clearUser());
         localStorage.removeItem("user");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         router.push("/");
       }
     };
 
     initializeAuth();
-  }, [refreshToken]);
+  }, [refreshToken, dispatch, router]);
 
   if (isLoading) {
     return (
@@ -36,7 +38,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  return <div>{children}</div>;
+  return <>{children}</>;
 };
 
 export default AuthProvider;

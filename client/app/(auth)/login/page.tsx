@@ -53,16 +53,18 @@ const LoginPage = () => {
       const response = await loginUser(data).unwrap();
       if (response) {
         toast.success("Login successful!");
-        dispatch(setUser(response.data.user));
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        dispatch(setUser(response.data.user));
         form.reset();
         router.push("/");
       } else {
-        toast.error("Something went wrong");
+        toast.error("Login failed");
       }
     } catch (error: any) {
-      console.error("Login failed:", error);
-      toast.error("Login failed");
+      console.error("Something went wrong:", error);
+      toast.error("Something went wrong");
     }
   };
 

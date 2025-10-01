@@ -61,6 +61,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
           role: user.role,
         },
         accessToken,
+        refreshToken,
       },
     });
   } catch (error: any) {
@@ -140,6 +141,7 @@ export const loginUser = catchAsyncError(async (req, res, next) => {
           role: user.role,
         },
         accessToken,
+        refreshToken,
       },
     });
   } catch (error: any) {

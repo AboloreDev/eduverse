@@ -56,17 +56,19 @@ const RegisterPage = () => {
 
       if (response) {
         toast.success("Registration successful!");
-        dispatch(setUser(response.data.user));
         localStorage.setItem("user", JSON.stringify(response.data.user));
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        dispatch(setUser(response.data.user));
         form.reset();
         router.push("/");
       } else {
-        toast.error("Something went wrong");
+        toast.error("Registration failed");
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Registration failed:", error);
-      toast.error("Registration failed");
+      console.error("Something went wrong:", error);
+      toast.error("Something went wrong");
     }
   };
 

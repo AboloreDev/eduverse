@@ -44,9 +44,12 @@ export const authApi = createApi({
       invalidatesTags: ["User", "Auth"],
     }),
 
-    refreshToken: builder.query<RefreshTokenResponse, void>({
-      query: () => "/api/v1/project/auth/refresh",
-      providesTags: ["User"],
+    refreshToken: builder.mutation<RefreshTokenResponse, void>({
+      query: () => ({
+        url: "/api/v1/project/auth/refresh",
+        method: "GET",
+      }),
+      invalidatesTags: ["User"],
     }),
 
     getUserProfile: builder.query<User, void>({
@@ -61,6 +64,6 @@ export const {
   useGetUserProfileQuery,
   useLogoutMutation,
   useLoginUserMutation,
-  useRefreshTokenQuery,
-  useLazyRefreshTokenQuery,
+  useRefreshTokenMutation,
+  useLazyGetUserProfileQuery,
 } = authApi;

@@ -30,7 +30,7 @@ export const fileUploadController = createApi({
 
     createCourse: builder.mutation<ApiResponse<object>, UploadCourseResponse>({
       query: (data) => ({
-        url: "/api/v1/project/file-uploads/course",
+        url: "/api/v1/project/courses/create",
         method: "POST",
         body: data,
       }),

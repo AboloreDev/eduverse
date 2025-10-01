@@ -13,6 +13,8 @@ export interface AuthResponse {
   message: string;
   data: {
     user: User;
+    accessToken: string;
+    refreshToken: string;
   };
 }
 
@@ -27,5 +29,25 @@ export interface RefreshTokenResponse {
   data: {
     user: User;
     newAccessToken: string;
+  };
+}
+
+export interface Course {
+  title: string;
+  subDescription: string;
+  description: string;
+  category: string;
+  level: string;
+  duration: number;
+  status: string;
+  price: number;
+  fileKey?: string;
+}
+
+export interface CourseResponse<T> {
+  success: boolean;
+  message: string;
+  data?: {
+    course: Course;
   };
 }

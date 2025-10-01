@@ -25,7 +25,7 @@ import {
 } from "../ui/dropdown-menu";
 
 import { useAppDispatch, useAppSelector } from "@/state/redux";
-import { setUser } from "@/state/slice/globalSlice";
+import { clearUser, setUser } from "@/state/slice/globalSlice";
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
@@ -44,12 +44,23 @@ const Navbar = () => {
   const user = useAppSelector((state) => state.global.user);
   const { data: userResponse, isLoading } = useGetUserProfileQuery();
 
-  // Rehydrate user from localStorage when navbar mounts
   useEffect(() => {
-    if (!user) {
-      const savedUser = localStorage.getItem("user");
-      if (savedUser) {
+    const accessToken = localStorage.getItem("accessToken");
+    const refreshToken = localStorage.getItem("refreshToken");
+    const savedUser = localStorage.getItem("user");
+
+    if (!accessToken && !refreshToken) {
+      if (user) {
+        dispatch(clearUser());
+      }
+      return;
+    }
+    if (!user && savedUser) {
+      try {
         dispatch(setUser(JSON.parse(savedUser)));
+      } catch (error) {
+        console.error("Failed to parse user data:", error);
+        localStorage.removeItem("user");
       }
     }
   }, [user, dispatch]);

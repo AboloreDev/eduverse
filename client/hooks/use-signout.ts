@@ -16,6 +16,8 @@ export function useSignOut() {
       await logout().unwrap();
       dispatch(clearUser());
       localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
       toast.success("Logged out successfully!");
       router.push("/");
     } catch (err: any) {
