@@ -1,4 +1,5 @@
 export interface Course {
+  id: string;
   title: string;
   subDescription: string;
   description: string;
@@ -20,4 +21,9 @@ export interface CourseResponse<T> {
 export interface editCourseRequest {
   id: string;
   data: Partial<Course>;
+}
+
+export interface CourseDeleteResponse {
+  success: boolean;
+  message: string;
 }

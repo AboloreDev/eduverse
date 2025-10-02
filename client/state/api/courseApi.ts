@@ -1,7 +1,11 @@
 import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { ApiResponse } from "../types/authTypes";
-import { CourseResponse, editCourseRequest } from "../types/courseTypes";
+import {
+  CourseDeleteResponse,
+  CourseResponse,
+  editCourseRequest,
+} from "../types/courseTypes";
 import { UploadCourseResponse } from "../types/uploadTypes";
 
 export const courseApi = createApi({
@@ -19,8 +23,11 @@ export const courseApi = createApi({
       providesTags: ["Courses", "User"],
     }),
 
-    deleteSingleCourse: builder.mutation<void, void>({
-      query: (id) => `/api/v1/project/courses/${id}`,
+    deleteSingleCourse: builder.mutation<CourseDeleteResponse, string>({
+      query: (id) => ({
+        url: `/api/v1/project/courses/${id}`,
+        method: "DELETE",
+      }),
       invalidatesTags: ["Courses", "User"],
     }),
 

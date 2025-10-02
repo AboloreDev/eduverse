@@ -41,7 +41,7 @@ export const uploadfile = catchAsyncError(async (req, res, next) => {
 
 export const deleteUploadedFile = catchAsyncError(async (req, res, next) => {
   try {
-    const key = req.params.key;
+    const { key } = req.body;
 
     if (!key) return next(new AppError("Missing or invalid Object key", 400));
 
@@ -62,31 +62,3 @@ export const deleteUploadedFile = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }
 });
-
-export const submitCourse = catchAsyncError(
-  async (req: AuthRequest, res, next) => {
-    const user = req.user!;
-    try {
-      const request = courseSchema.parse(req.body);
-
-      if (!request) return next(new AppError("All fields are required", 400));
-
-      const data = await prisma.course.create({
-        data: {
-          ...request,
-          userId: user.id,
-        },
-      });
-
-      res.status(200).json({
-        success: true,
-        message: "Course creation was successful",
-        data,
-      });
-    } catch (error: any) {
-      console.error("Error submitting course form:", error);
-
-      return next(new AppError(`Something went wrong: ${error.message}`, 500));
-    }
-  }
-);

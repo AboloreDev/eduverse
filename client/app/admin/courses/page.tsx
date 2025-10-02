@@ -1,7 +1,10 @@
 "use client";
 
 import { buttonVariants } from "@/components/ui/button";
-import { useFetchAllCoursesQuery } from "@/state/api/courseApi";
+import {
+  useDeleteSingleCourseMutation,
+  useFetchAllCoursesQuery,
+} from "@/state/api/courseApi";
 import { PlusIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
@@ -25,7 +28,7 @@ const CoursesPage = () => {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
         {Array.isArray(courses?.data) && courses.data.length > 0 ? (
           courses.data.map((course) => (
             <CourseCard key={course.id} course={course} />

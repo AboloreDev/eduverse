@@ -20,10 +20,14 @@ export const fileUploadController = createApi({
       invalidatesTags: ["Upload"],
     }),
 
-    deleteUploadFile: builder.mutation<void, string>({
+    deleteUploadFile: builder.mutation<
+      { success: boolean; message: string },
+      string
+    >({
       query: (key) => ({
-        url: `/api/v1/project/file-uploads/${key}`,
+        url: `/api/v1/project/file-uploads`,
         method: "DELETE",
+        body: { key },
       }),
       invalidatesTags: ["Upload"],
     }),

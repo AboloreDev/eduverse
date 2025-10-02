@@ -15,6 +15,7 @@ import {
   useDeleteUploadFileMutation,
   useUploadFileMutation,
 } from "@/state/api/uploadApi";
+import { constructUrl } from "@/hooks/use-construct-url";
 
 interface UploaderState {
   id: string | null;
@@ -34,8 +35,9 @@ interface ImageFormUploadProps {
 }
 
 const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
-  const [uploadFileController, { isLoading }] = useUploadFileMutation();
+  const [uploadFileController] = useUploadFileMutation();
   const [deleteUploadFile] = useDeleteUploadFileMutation();
+  const fileUrl = constructUrl(value || "");
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,
@@ -45,6 +47,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
     uploading: false,
     fileType: "image",
     key: value,
+    objectUrl: fileUrl,
   });
 
   const uploadFile = async (file: File) => {
@@ -102,6 +105,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
               progress: 100,
               error: false,
               key: key,
+              objectUrl: constructUrl(key),
             }));
             onChange?.(key);
             toast.success("File uploaded successfully");
@@ -210,6 +214,16 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
       }
     };
   }, [fileState.objectUrl]);
+
+  useEffect(() => {
+    if (value && value !== fileState.key) {
+      setFileState((prev) => ({
+        ...prev,
+        key: value,
+        objectUrl: constructUrl(value),
+      }));
+    }
+  }, [value]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
