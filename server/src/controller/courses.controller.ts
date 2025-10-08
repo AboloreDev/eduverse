@@ -114,7 +114,42 @@ export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
   try {
     const singleCourse = await prisma.course.findUnique({
       where: { id: id },
-      include: { User: true },
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        description: true,
+        fileKey: true,
+        level: true,
+        status: true,
+        price: true,
+        duration: true,
+        subDescription: true,
+        User: {
+          select: {
+            id: true,
+            firstName: true,
+            email: true,
+          },
+        },
+        chapters: {
+          select: {
+            id: true,
+            title: true,
+            position: true,
+            lessons: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                thumbnailKey: true,
+                position: true,
+                videoKey: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!singleCourse) return next(new AppError("No course found", 404));

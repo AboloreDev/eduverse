@@ -9,6 +9,8 @@ import globalReducer from "./slice/globalSlice";
 import { authApi } from "./api/authApi";
 import { fileUploadController } from "./api/uploadApi";
 import { courseApi } from "./api/courseApi";
+import { lessonsApi } from "./api/lessonsApi";
+import { chaptersApi } from "./api/chaptersApi";
 
 /* REDUX STORE */
 const rootReducer = combineReducers({
@@ -16,6 +18,8 @@ const rootReducer = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [fileUploadController.reducerPath]: fileUploadController.reducer,
   [courseApi.reducerPath]: courseApi.reducer,
+  [lessonsApi.reducerPath]: lessonsApi.reducer,
+  [chaptersApi.reducerPath]: chaptersApi.reducer,
 });
 
 export const makeStore = () => {
@@ -25,7 +29,9 @@ export const makeStore = () => {
       getDefaultMiddleware().concat(
         authApi.middleware,
         fileUploadController.middleware,
-        courseApi.middleware
+        courseApi.middleware,
+        lessonsApi.middleware,
+        chaptersApi.middleware
       ),
   });
 };

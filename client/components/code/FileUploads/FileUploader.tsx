@@ -37,7 +37,7 @@ interface ImageFormUploadProps {
 const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
   const [uploadFileController] = useUploadFileMutation();
   const [deleteUploadFile] = useDeleteUploadFileMutation();
-  const fileUrl = constructUrl(value || "");
+  const fileUrl = value ? constructUrl(value) : "";
   const [fileState, setFileState] = useState<UploaderState>({
     error: false,
     file: null,

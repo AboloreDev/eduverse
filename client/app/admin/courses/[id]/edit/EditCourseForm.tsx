@@ -73,7 +73,7 @@ const EditCourseForm = ({
         category: course.category || "",
         price: course.price || 0,
         duration: course.duration || 0,
-        fileKey: course.fileKey,
+        fileKey: course.fileKey || "",
         level:
           (course.level as "Beginner" | "Intermediate" | "Advanced") ||
           "Beginner",

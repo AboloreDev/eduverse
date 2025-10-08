@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "eduverselmsbucket.s3.us-east-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
       },
     ],
   },

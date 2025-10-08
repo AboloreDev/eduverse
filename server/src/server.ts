@@ -8,6 +8,8 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import fileUploadsRoutes from "./routes/fileUploadsRoutes";
 import coursesRoutes from "./routes/coursesRoutes";
+import lessonsRoutes from "./routes/lessonsRoutes";
+import chapterRoutes from "./routes/chapterRoutes";
 import { OK } from "./constants/statusCodes";
 import AppError from "./utils/appError";
 import { errorController } from "./utils/errorController";
@@ -44,6 +46,8 @@ app.use("/api/v1/project/auth", authRoutes);
 app.use("/api/v1/project/user", userRoutes);
 app.use("/api/v1/project/file-uploads", fileUploadsRoutes);
 app.use("/api/v1/project/courses", coursesRoutes);
+app.use("/api/v1/project/courses/:courseId", lessonsRoutes);
+app.use("/api/v1/project/courses/:courseId", chapterRoutes);
 
 app.get("/health", healthCheck);
 app.use((req: Request, res: Response, next: NextFunction) => {

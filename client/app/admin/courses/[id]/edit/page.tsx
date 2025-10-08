@@ -81,7 +81,11 @@ const EditCoursePage = () => {
               <CardDescription>Update your course structure</CardDescription>
             </CardHeader>
             <CardContent>
-              <CourseStructure />
+              <CourseStructure
+                courseId={courseId}
+                courseData={courseData}
+                isLoading={isLoading}
+              />
             </CardContent>
           </Card>
         </TabsContent>

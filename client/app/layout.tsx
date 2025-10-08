@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`poppins-regular`}>
-        <Toaster />
+        <Toaster closeButton position="top-right" />
         <Providers>
           <AuthProvider>
             <ThemeProvider
