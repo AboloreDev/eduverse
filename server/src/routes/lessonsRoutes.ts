@@ -1,14 +1,32 @@
 import express from "express";
 import { isAuthenticated, restrictTo } from "../middleware/isAuthenticated";
-import { reOrderLessons } from "../controller/lessons.controller";
+import {
+  createNewLesson,
+  deleteLesson,
+  reOrderLessons,
+} from "../controller/lessons.controller";
 
 const router = express.Router();
 
+router.post(
+  "/chapters/lessons/create",
+  isAuthenticated,
+  restrictTo("admin"),
+  createNewLesson
+);
+
 router.put(
-  "/chapters/:chapterId/lessons/re-order",
+  "/:courseId/chapters/:chapterId/lessons/re-order",
   isAuthenticated,
   restrictTo("admin"),
   reOrderLessons
+);
+
+router.delete(
+  "/chapters/:chapterId/lessons/:lessonId/delete",
+  isAuthenticated,
+  restrictTo("admin"),
+  deleteLesson
 );
 
 export default router;

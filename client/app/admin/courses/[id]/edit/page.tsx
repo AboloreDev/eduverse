@@ -19,6 +19,7 @@ import React from "react";
 import { toast } from "sonner";
 import EditCourseForm from "./EditCourseForm";
 import CourseStructure from "./CourseStructure";
+import { Loader2Icon } from "lucide-react";
 
 const EditCoursePage = () => {
   const { id } = useParams();
@@ -44,6 +45,14 @@ const EditCoursePage = () => {
       toast.error("Something went wrong", error.message);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-center flex justify-center items-center">
+        <Loader2Icon className="animate-spin w-6 h-6" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -81,11 +90,7 @@ const EditCoursePage = () => {
               <CardDescription>Update your course structure</CardDescription>
             </CardHeader>
             <CardContent>
-              <CourseStructure
-                courseId={courseId}
-                courseData={courseData}
-                isLoading={isLoading}
-              />
+              <CourseStructure courseData={courseData} />
             </CardContent>
           </Card>
         </TabsContent>

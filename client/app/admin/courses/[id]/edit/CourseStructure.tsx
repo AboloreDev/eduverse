@@ -39,11 +39,13 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useReOrderLessonsMutation } from "@/state/api/lessonsApi";
 import { useReOrderChaptersMutation } from "@/state/api/chaptersApi";
+import NewChapterModal from "./NewChapterModal";
+import NewLessonModal from "./NewLessonModal";
+import DeleteChapterModal from "./DeleteChapterModal";
+import DeleteLessonModal from "./DeleteLessonModal";
 
 interface CourseStructureProps {
-  courseId: string;
-  courseData?: any;
-  isLoading?: boolean;
+  courseData: any;
 }
 
 interface SortableItemProps {
@@ -52,25 +54,15 @@ interface SortableItemProps {
   className?: string;
   data?: {
     type: "chapter" | "lesson";
-    chapterId?: string; // only relevant for lessons=
+    chapterId?: string;
   };
 }
 
-const CourseStructure = ({
-  courseId,
-  courseData,
-  isLoading,
-}: CourseStructureProps) => {
+const CourseStructure = ({ courseData }: CourseStructureProps) => {
+  const courseId = courseData.data.id;
   const [reOrderLessonsApi] = useReOrderLessonsMutation();
   const [reOrderChaptersApi] = useReOrderChaptersMutation();
 
-  if (isLoading) {
-    return (
-      <div className="text-center flex justify-center items-center">
-        <Loader2Icon className="animate-spin w-6 h-6" />
-      </div>
-    );
-  }
   // Structure arrays of the chapter and lessons from the backend
   // Arrange them properly for the drag and drop
   const initialItems = courseData?.data?.chapters?.map((chapter: any) => ({
@@ -93,21 +85,25 @@ const CourseStructure = ({
 
   useEffect(() => {
     setItems((prevItems: any) => {
-      const updatedItems = courseData.chapter.map((chapter: any) => ({
-        id: chapter.id,
-        title: chapter.title,
-        order: chapter.position,
-        isOpen:
-          prevItems.find((item: any) => item.id === chapter.id)?.isOpen ?? true,
-        lessons: chapter.lessons.map((lesson: any) => ({
-          id: lesson.id,
-          title: lesson.title,
-          description: lesson.description,
-          thumbnailKey: lesson.thumbnailKey,
-          videoKey: lesson.videoKey,
-          order: lesson.position,
-        })),
-      }));
+      const updatedItems =
+        courseData.data.chapters.map((chapter: any) => ({
+          id: chapter.id,
+          title: chapter.title,
+          order: chapter.position,
+          isOpen:
+            prevItems.find((item: any) => item.id === chapter.id)?.isOpen ??
+            true,
+          lessons: chapter.lessons.map((lesson: any) => ({
+            id: lesson.id,
+            title: lesson.title,
+            description: lesson.description,
+            thumbnailKey: lesson.thumbnailKey,
+            videoKey: lesson.videoKey,
+            order: lesson.position,
+          })),
+        })) || [];
+
+      return updatedItems;
     });
   }, [courseData]);
 
@@ -201,7 +197,6 @@ const CourseStructure = ({
         toast.promise(
           reOrderChaptersApi({
             courseId,
-
             chapters: chaptersToUpdate,
           }).unwrap(),
           {
@@ -335,7 +330,12 @@ const CourseStructure = ({
     >
       <Card>
         <CardHeader className="flex flex-row items-center justify-between border-b border-border">
-          <CardTitle>Chapters</CardTitle>
+          <CardTitle className="w-full px-4">
+            <div className=" flex justify-between items-center">
+              <p>Chapter</p>
+              <NewChapterModal courseId={courseId} />
+            </div>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-10">
           <SortableContext strategy={verticalListSortingStrategy} items={items}>
@@ -376,9 +376,11 @@ const CourseStructure = ({
                             {item.title}
                           </p>
                         </div>
-                        <Button variant="outline" size="icon">
-                          <Trash2 className="w-5 h-5 text-red-600" />
-                        </Button>
+                        <DeleteChapterModal
+                          chapterId={item.id}
+                          courseId={courseId}
+                          chapterTitle={item.title}
+                        />
                       </div>
 
                       {/* Lessons */}
@@ -413,9 +415,11 @@ const CourseStructure = ({
                                         {lesson.title}
                                       </Link>
                                     </div>
-                                    <Button variant="outline" size="icon">
-                                      <Trash2 className="w-4 h-4 text-red-600" />
-                                    </Button>
+                                    <DeleteLessonModal
+                                      chapterId={item.id}
+                                      lessonId={lesson.id}
+                                      lessonTitle={lesson.title}
+                                    />
                                   </div>
                                 )}
                               </SortableItem>
@@ -424,7 +428,10 @@ const CourseStructure = ({
 
                           {/* Add Lesson Button */}
                           <div className="p-1 mt-4 w-full flex justify-end">
-                            <Button>+ Create New Lesson</Button>
+                            <NewLessonModal
+                              courseId={courseId}
+                              chapterId={item.id}
+                            />
                           </div>
                         </div>
                       </CollapsibleContent>

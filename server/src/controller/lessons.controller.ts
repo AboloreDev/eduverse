@@ -1,3 +1,5 @@
+import tr from "zod/v4/locales/tr.js";
+import { lessonSchema } from "../schemas/lessons.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
 import prisma from "../utils/prismaClient";
@@ -29,6 +31,107 @@ export const reOrderLessons = catchAsyncError(async (req, res, next) => {
     });
   } catch (error: any) {
     console.error("Error deleting URL:", error);
+
+    return next(new AppError(`Something went wrong: ${error.message}`, 500));
+  }
+});
+
+export const createNewLesson = catchAsyncError(async (req, res, next) => {
+  try {
+    const request = lessonSchema.parse(req.body);
+
+    if (!request) return next(new AppError(`Invalid data`, 400));
+
+    const newLesson = await prisma.$transaction(async (tx) => {
+      const maxPosition = await tx.lesson.findFirst({
+        where: { chapterId: request.chapterId },
+        select: { position: true },
+        orderBy: {
+          position: "desc",
+        },
+      });
+
+      await tx.lesson.create({
+        data: {
+          title: request.name,
+          description: request.description,
+          videoKey: request.videoKey || "",
+          thumbnailKey: request.thumbnailKey || "",
+          chapterId: request.chapterId,
+          position: (maxPosition?.position ?? 0) + 1,
+        },
+      });
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Lesson creation was successful",
+      data: newLesson,
+    });
+  } catch (error: any) {
+    console.error("Error creating lesson:", error);
+
+    return next(new AppError(`Something went wrong: ${error.message}`, 500));
+  }
+});
+
+export const deleteLesson = catchAsyncError(async (req, res, next) => {
+  try {
+    const { chapterId, lessonId } = req.params;
+
+    const chapterWithLessons = await prisma.chapter.findUnique({
+      where: { id: chapterId },
+      select: {
+        lessons: {
+          orderBy: {
+            position: "asc",
+          },
+          select: {
+            id: true,
+            position: true,
+          },
+        },
+      },
+    });
+
+    if (!chapterWithLessons) {
+      return next(new AppError(`Chapter not found`, 400));
+    }
+
+    const lessons = chapterWithLessons.lessons;
+
+    const lessonToDelete = lessons.find((lesson) => lesson.id === lessonId);
+
+    if (!lessonToDelete) {
+      return next(
+        new AppError(`There is no lesson found for this chapter`, 400)
+      );
+    }
+
+    const remainingLessons = lessons.filter((lesson) => lesson.id !== lessonId);
+
+    const updateLessons = remainingLessons.map((lesson, idx) => {
+      return prisma.lesson.update({
+        where: { id: lesson.id },
+        data: {
+          position: idx + 1,
+        },
+      });
+    });
+
+    await prisma.$transaction([
+      ...updateLessons,
+      prisma.lesson.delete({
+        where: { id: lessonId, chapterId: chapterId },
+      }),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Lesson deleted and positions re-ordered successfully",
+    });
+  } catch (error: any) {
+    console.error("Error deleting lessons:", error);
 
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }

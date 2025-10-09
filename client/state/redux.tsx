@@ -6,33 +6,24 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import globalReducer from "./slice/globalSlice";
-import { authApi } from "./api/authApi";
-import { fileUploadController } from "./api/uploadApi";
-import { courseApi } from "./api/courseApi";
-import { lessonsApi } from "./api/lessonsApi";
-import { chaptersApi } from "./api/chaptersApi";
+import chapterReducer from "./slice/chapterSlice";
+import lessonReducer from "./slice/lessonSlice";
+
+import { api } from "./api/baseApi";
 
 /* REDUX STORE */
 const rootReducer = combineReducers({
   global: globalReducer,
-  [authApi.reducerPath]: authApi.reducer,
-  [fileUploadController.reducerPath]: fileUploadController.reducer,
-  [courseApi.reducerPath]: courseApi.reducer,
-  [lessonsApi.reducerPath]: lessonsApi.reducer,
-  [chaptersApi.reducerPath]: chaptersApi.reducer,
+  chapter: chapterReducer,
+  lesson: lessonReducer,
+  [api.reducerPath]: api.reducer,
 });
 
 export const makeStore = () => {
   return configureStore({
     reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat(
-        authApi.middleware,
-        fileUploadController.middleware,
-        courseApi.middleware,
-        lessonsApi.middleware,
-        chaptersApi.middleware
-      ),
+      getDefaultMiddleware().concat(api.middleware),
   });
 };
 

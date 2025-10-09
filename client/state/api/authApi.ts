@@ -6,11 +6,9 @@ import {
   RefreshTokenResponse,
   User,
 } from "../types/authTypes";
+import { api } from "./baseApi";
 
-export const authApi = createApi({
-  baseQuery: baseQueryWithAuth,
-  reducerPath: "authApi",
-  tagTypes: ["User", "Auth"],
+export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     registerUser: builder.mutation<
       AuthResponse,
@@ -21,7 +19,7 @@ export const authApi = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["User", "Auth"],
+      invalidatesTags: ["User"],
     }),
 
     loginUser: builder.mutation<
@@ -33,7 +31,7 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      invalidatesTags: ["User", "Auth"],
+      invalidatesTags: ["User"],
     }),
 
     logout: builder.mutation<ApiResponse<object>, void>({
@@ -41,7 +39,7 @@ export const authApi = createApi({
         url: "/api/v1/project/auth/logout",
         method: "POST",
       }),
-      invalidatesTags: ["User", "Auth"],
+      invalidatesTags: ["User"],
     }),
 
     refreshToken: builder.mutation<RefreshTokenResponse, void>({

@@ -46,8 +46,8 @@ app.use("/api/v1/project/auth", authRoutes);
 app.use("/api/v1/project/user", userRoutes);
 app.use("/api/v1/project/file-uploads", fileUploadsRoutes);
 app.use("/api/v1/project/courses", coursesRoutes);
-app.use("/api/v1/project/courses/:courseId", lessonsRoutes);
-app.use("/api/v1/project/courses/:courseId", chapterRoutes);
+app.use("/api/v1/project/courses", lessonsRoutes);
+app.use("/api/v1/project/courses", chapterRoutes);
 
 app.get("/health", healthCheck);
 app.use((req: Request, res: Response, next: NextFunction) => {

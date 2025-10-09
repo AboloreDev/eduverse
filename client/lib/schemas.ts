@@ -25,14 +25,8 @@ export const courseSchema = z.object({
     .string()
     .min(1, "Title is required")
     .max(100, "Title must not be more than 100"),
-  description: z
-    .string()
-    .min(1, "Description is required")
-    .max(2500, "Description must not be more than 2500"),
-  subDescription: z
-    .string()
-    .min(1, "Sub-description is required")
-    .max(500, "Sub-description must not be more than 500"),
+  description: z.string().min(1, "Description is required"),
+  subDescription: z.string().min(1, "Sub-description is required"),
   category: z
     .string()
     .min(1, "Category is required")
@@ -46,3 +40,24 @@ export const courseSchema = z.object({
 });
 
 export type CourseFormData = z.infer<typeof courseSchema>;
+
+export const chapterSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  courseId: z.string().uuid("Invalid course ID"),
+});
+
+export type ChapterFormData = z.infer<typeof chapterSchema>;
+
+export const lessonSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  courseId: z.string().uuid("Invalid course ID"),
+  chapterId: z.string().uuid("Invalid chapter ID"),
+  description: z
+    .string()
+    .min(1, "Description must be at least 3 characters long")
+    .optional(),
+  thumbnailKey: z.string().optional(),
+  videoKey: z.string().optional(),
+});
+
+export type LessonFormData = z.infer<typeof lessonSchema>;

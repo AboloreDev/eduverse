@@ -6,21 +6,18 @@ import {
   CourseResponse,
   editCourseRequest,
 } from "../types/courseTypes";
-import { UploadCourseResponse } from "../types/uploadTypes";
+import { api } from "./baseApi";
 
-export const courseApi = createApi({
-  baseQuery: baseQueryWithAuth,
-  reducerPath: "courseApi",
-  tagTypes: ["Courses", "User"],
+export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
     fetchAllCourses: builder.query<CourseResponse<object>, void>({
       query: () => "/api/v1/project/courses/all",
-      providesTags: ["Courses", "User"],
+      providesTags: ["Courses", "User", "Chapter"],
     }),
 
     fetchSingleCourse: builder.query<CourseResponse<object>, string>({
       query: (id) => `/api/v1/project/courses/${id}`,
-      providesTags: ["Courses", "User"],
+      providesTags: ["Courses", "User", "Chapter"],
     }),
 
     deleteSingleCourse: builder.mutation<CourseDeleteResponse, string>({
@@ -28,7 +25,7 @@ export const courseApi = createApi({
         url: `/api/v1/project/courses/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Courses", "User"],
+      invalidatesTags: ["Courses", "User", "Chapter"],
     }),
 
     editCourse: builder.mutation<CourseResponse<object>, editCourseRequest>({
@@ -37,7 +34,7 @@ export const courseApi = createApi({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["Courses", "Chapter", "User"],
     }),
   }),
 });

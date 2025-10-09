@@ -2,11 +2,9 @@ import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { ApiResponse } from "../types/authTypes";
 import { UploadCourseResponse } from "../types/uploadTypes";
+import { api } from "./baseApi";
 
-export const fileUploadController = createApi({
-  baseQuery: baseQueryWithAuth,
-  reducerPath: "fileUploadController",
-  tagTypes: ["Upload"],
+export const fileUploadController = api.injectEndpoints({
   endpoints: (builder) => ({
     uploadFile: builder.mutation<
       ApiResponse<object>,
@@ -17,7 +15,7 @@ export const fileUploadController = createApi({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["Upload"],
+      invalidatesTags: ["Courses"],
     }),
 
     deleteUploadFile: builder.mutation<
@@ -29,7 +27,7 @@ export const fileUploadController = createApi({
         method: "DELETE",
         body: { key },
       }),
-      invalidatesTags: ["Upload"],
+      invalidatesTags: ["Courses"],
     }),
 
     createCourse: builder.mutation<ApiResponse<object>, UploadCourseResponse>({
@@ -38,6 +36,7 @@ export const fileUploadController = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Courses"],
     }),
   }),
 });

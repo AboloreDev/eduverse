@@ -4,11 +4,10 @@ import {
   ReOrderLessonsRequest,
   ReOrderLessonsResponse,
 } from "../types/lessonTypes";
+import { api } from "./baseApi";
+import { ApiResponse } from "../types/authTypes";
 
-export const lessonsApi = createApi({
-  baseQuery: baseQueryWithAuth,
-  reducerPath: "lessonsApi",
-  tagTypes: ["Courses"],
+export const lessonsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     reOrderLessons: builder.mutation<
       ReOrderLessonsResponse,
@@ -19,9 +18,41 @@ export const lessonsApi = createApi({
         method: "PUT",
         body: { lessons },
       }),
-      invalidatesTags: ["Courses"],
+      invalidatesTags: ["Courses", "Chapter", "Lesson"],
+    }),
+    createLesson: builder.mutation<
+      ApiResponse<object>,
+      {
+        name: string;
+        chapterId: string;
+        description?: string;
+        videoKey?: string;
+        thumbnailKey?: string;
+      }
+    >({
+      query: (data) => ({
+        url: `/api/v1/project/courses/chapters/lessons/create`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Courses", "Chapter", "Lesson"],
+    }),
+
+    deleteLesson: builder.mutation<
+      ApiResponse<object>,
+      { chapterId: string; lessonId: string }
+    >({
+      query: ({ chapterId, lessonId }) => ({
+        url: `/api/v1/project/courses/chapters/${chapterId}/lessons/${lessonId}/delete`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Courses", "Chapter", "Lesson"],
     }),
   }),
 });
 
-export const { useReOrderLessonsMutation } = lessonsApi;
+export const {
+  useReOrderLessonsMutation,
+  useCreateLessonMutation,
+  useDeleteLessonMutation,
+} = lessonsApi;
