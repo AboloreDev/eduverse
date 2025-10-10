@@ -1,4 +1,3 @@
-import tr from "zod/v4/locales/tr.js";
 import { lessonSchema } from "../schemas/lessons.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
@@ -132,6 +131,69 @@ export const deleteLesson = catchAsyncError(async (req, res, next) => {
     });
   } catch (error: any) {
     console.error("Error deleting lessons:", error);
+
+    return next(new AppError(`Something went wrong: ${error.message}`, 500));
+  }
+});
+
+export const fetchSingleLessonDetails = catchAsyncError(
+  async (req, res, next) => {
+    const { courseId, chapterId, lessonId } = req.params;
+
+    try {
+      const lesson = await prisma.lesson.findUnique({
+        where: { id: lessonId, chapterId: chapterId },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          position: true,
+          thumbnailKey: true,
+          videoKey: true,
+          chapterId: true,
+        },
+      });
+
+      if (!lesson) return next(new AppError(`Lesson not found`, 400));
+
+      res.status(200).json({
+        success: true,
+        message: "Lessons reordered successfully",
+        data: lesson,
+      });
+    } catch (error: any) {
+      console.error("Error fetching lesson:", error);
+
+      return next(new AppError(`Something went wrong: ${error.message}`, 500));
+    }
+  }
+);
+
+export const updateLesson = catchAsyncError(async (req, res, next) => {
+  const { courseId, chapterId, lessonId } = req.params;
+
+  try {
+    const request = lessonSchema.parse(req.body);
+
+    if (!request) return next(new AppError(`All fields are required`, 400));
+
+    const updatedLesson = await prisma.lesson.update({
+      where: { id: lessonId, chapterId: chapterId },
+      data: {
+        title: request.name,
+        thumbnailKey: request.thumbnailKey,
+        videoKey: request.videoKey,
+        description: request.description,
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Lessons updated successfully",
+      data: updatedLesson,
+    });
+  } catch (error: any) {
+    console.log("Error updating lesson", error);
 
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }

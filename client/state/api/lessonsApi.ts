@@ -1,8 +1,10 @@
 import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
-import { createApi } from "@reduxjs/toolkit/query/react";
+import { Api, createApi } from "@reduxjs/toolkit/query/react";
 import {
   ReOrderLessonsRequest,
   ReOrderLessonsResponse,
+  SingleLessonResponse,
+  UpdateLessonParams,
 } from "../types/lessonTypes";
 import { api } from "./baseApi";
 import { ApiResponse } from "../types/authTypes";
@@ -48,6 +50,23 @@ export const lessonsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Courses", "Chapter", "Lesson"],
     }),
+
+    fetchSingleLesson: builder.query<
+      SingleLessonResponse<object>,
+      { courseId: string; chapterId: string; lessonId: string }
+    >({
+      query: ({ courseId, chapterId, lessonId }) =>
+        `/api/v1/project/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`,
+      providesTags: ["Courses", "Chapter", "Lesson"],
+    }),
+    updateLesson: builder.mutation<ApiResponse<object>, UpdateLessonParams>({
+      query: ({ courseId, lessonId, chapterId, data }) => ({
+        url: `/api/v1/project/courses/${courseId}/chapters/${chapterId}/lessons/${lessonId}/`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Courses", "Chapter", "Lesson"],
+    }),
   }),
 });
 
@@ -55,4 +74,6 @@ export const {
   useReOrderLessonsMutation,
   useCreateLessonMutation,
   useDeleteLessonMutation,
+  useFetchSingleLessonQuery,
+  useUpdateLessonMutation,
 } = lessonsApi;

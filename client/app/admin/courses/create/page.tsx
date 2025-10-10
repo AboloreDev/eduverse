@@ -383,6 +383,7 @@ const CourseCreationPage = () => {
                         <FileUploader
                           value={field.value}
                           onChange={field.onChange}
+                          fileTypeAccepted="image"
                         />
                       </FormControl>
                       <FormDescription className="text-slate-500">

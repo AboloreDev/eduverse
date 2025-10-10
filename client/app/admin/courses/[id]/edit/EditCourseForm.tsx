@@ -354,7 +354,11 @@ const EditCourseForm = ({
             <FormItem>
               <FormLabel>Course Thumbnail</FormLabel>
               <FormControl>
-                <FileUploader value={field.value} onChange={field.onChange} />
+                <FileUploader
+                  value={field.value}
+                  onChange={field.onChange}
+                  fileTypeAccepted="image"
+                />
               </FormControl>
               <FormDescription className="text-slate-500">
                 Upload a thumbnail image for your course

@@ -3,7 +3,9 @@ import { isAuthenticated, restrictTo } from "../middleware/isAuthenticated";
 import {
   createNewLesson,
   deleteLesson,
+  fetchSingleLessonDetails,
   reOrderLessons,
+  updateLesson,
 } from "../controller/lessons.controller";
 
 const router = express.Router();
@@ -27,6 +29,20 @@ router.delete(
   isAuthenticated,
   restrictTo("admin"),
   deleteLesson
+);
+
+router.get(
+  "/:courseId/chapters/:chapterId/lessons/:lessonId/",
+  isAuthenticated,
+  restrictTo("admin"),
+  fetchSingleLessonDetails
+);
+
+router.put(
+  "/:courseId/chapters/:chapterId/lessons/:lessonId/",
+  isAuthenticated,
+  restrictTo("admin"),
+  updateLesson
 );
 
 export default router;

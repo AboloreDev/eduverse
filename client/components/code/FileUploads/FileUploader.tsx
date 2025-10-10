@@ -32,9 +32,14 @@ interface UploaderState {
 interface ImageFormUploadProps {
   value?: string;
   onChange?: (value: string) => void;
+  fileTypeAccepted: "image" | "video";
 }
 
-const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
+const FileUploader = ({
+  value,
+  onChange,
+  fileTypeAccepted,
+}: ImageFormUploadProps) => {
   const [uploadFileController] = useUploadFileMutation();
   const [deleteUploadFile] = useDeleteUploadFileMutation();
   const fileUrl = value ? constructUrl(value) : "";
@@ -45,7 +50,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
     isDeleting: false,
     progress: 0,
     uploading: false,
-    fileType: "image",
+    fileType: fileTypeAccepted,
     key: value,
     objectUrl: fileUrl,
   });
@@ -62,7 +67,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
         fileName: file.name,
         fileType: file.type,
         fileSize: file.size,
-        isImage: true,
+        isImage: fileTypeAccepted === "image" ? true : false,
       }).unwrap();
 
       if (!result.success) {
@@ -152,12 +157,12 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
           id: uuidv4(),
           isDeleting: false,
           error: false,
-          fileType: file.type.startsWith("image") ? "image" : "video",
+          fileType: fileTypeAccepted,
         });
         uploadFile(file);
       }
     },
-    [fileState.objectUrl]
+    [fileState.objectUrl, uploadFile, fileTypeAccepted]
   );
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {
@@ -200,6 +205,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
           previewUrl={fileState.objectUrl}
           isDeleting={fileState.isDeleting}
           handleRemoveFile={handleRemoveFile}
+          fileType={fileState.fileType}
         />
       );
     }
@@ -227,7 +233,8 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept:
+      fileTypeAccepted === "video" ? { "video/*": [] } : { "image/*": [] },
     maxFiles: 1,
     multiple: false,
     maxSize: 5 * 1024 * 1024,
@@ -255,7 +262,7 @@ const FileUploader = ({ value, onChange }: ImageFormUploadProps) => {
         uploading: false,
         progress: 0,
         objectUrl: undefined,
-        fileType: "image",
+        fileType: fileTypeAccepted,
         id: null,
         error: false,
         isDeleting: false,
