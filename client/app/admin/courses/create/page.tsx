@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useConfetti } from "@/hooks/use-cofetti";
 import {
   CourseFormData,
   courseLevels,
@@ -47,6 +48,7 @@ import { toast } from "sonner";
 const CourseCreationPage = () => {
   const [createCourse, { isLoading }] = useCreateCourseMutation();
   const router = useRouter();
+  const { triggerConfetti } = useConfetti();
   const form = useForm<CourseFormData>({
     // @ts-ignore
     resolver: zodResolver(courseSchema),
@@ -68,7 +70,9 @@ const CourseCreationPage = () => {
     try {
       const response = await createCourse(data).unwrap();
       if (response.success) {
-        toast.success("Course sreated successfully");
+        toast.success("Course created successfully");
+        triggerConfetti();
+        form.reset();
         router.push("/admin/courses");
       } else {
         toast.error("Course creation failed");

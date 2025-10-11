@@ -36,38 +36,27 @@ export const createCourse = catchAsyncError(
 export const fetchAllCourses = catchAsyncError(
   async (req: AuthRequest, res, next) => {
     const user = req.user!;
-    let courses;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
 
     try {
-      if (user.role === "user") {
-        courses = await prisma.course.findMany({
-          where: { userId: user.id },
-          select: {
-            id: true,
-            title: true,
-            category: true,
-            description: true,
-            fileKey: true,
-            level: true,
-            status: true,
-            price: true,
-            duration: true,
-            subDescription: true,
-            User: {
-              select: {
-                id: true,
-                firstName: true,
-                email: true,
-              },
-            },
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-        });
-      } else if (user.role === "admin") {
-        courses = await prisma.course.findMany({
-          where: { userId: user.id },
+      let whereCondition = {};
+
+      if (user.role === "admin") {
+        whereCondition = { userId: user.id };
+      } else if (user.role === "user") {
+        whereCondition = {};
+      } else {
+        return next(new AppError(`Unauthorized role`, 403));
+      }
+
+      const [courses, totalCount] = await Promise.all([
+        prisma.course.findMany({
+          where: whereCondition,
+          skip,
+          take: limit,
+          orderBy: { createdAt: "desc" },
           select: {
             id: true,
             title: true,
@@ -77,10 +66,10 @@ export const fetchAllCourses = catchAsyncError(
             price: true,
             duration: true,
             subDescription: true,
-            createdAt: true,
             status: true,
             fileKey: true,
             slug: true,
+            createdAt: true,
             User: {
               select: {
                 id: true,
@@ -90,18 +79,23 @@ export const fetchAllCourses = catchAsyncError(
               },
             },
           },
-        });
-      } else {
-        return next(new AppError(`No courses found`, 404));
-      }
+        }),
+        prisma.course.count({ where: whereCondition }),
+      ]);
 
-      return res.status(OK).json({
+      return res.status(200).json({
         success: true,
-        message: "Course fetched Successfully",
+        message: "Courses fetched successfully",
         data: courses,
+        pagination: {
+          total: totalCount,
+          page,
+          limit,
+          totalPages: Math.ceil(totalCount / limit),
+        },
       });
     } catch (error: any) {
-      console.error("Error fetching all courses:", error);
+      console.error("Error fetching courses:", error);
       return next(new AppError(`Something went wrong: ${error.message}`, 500));
     }
   }
@@ -180,7 +174,7 @@ export const deleteSingleCourse = catchAsyncError(async (req, res, next) => {
 
     // 2. Delete course
     await prisma.course.delete({
-      where: { id },
+      where: { id: id },
     });
 
     // 3. Return response

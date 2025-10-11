@@ -22,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import DeleteCourseModal from "./[id]/DeleteCourseModal";
 
 interface CourseProps {
   course: {
@@ -68,10 +69,10 @@ const CourseCard = ({ course }: CourseProps) => {
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <Link href={`/admin/courses/${course.id}/delete`}>
-                <Trash2 className="size-4 text-destructive mr-2" />
-                Delete Course
-              </Link>
+              <DeleteCourseModal
+                courseId={course.id}
+                courseTitle={course.title}
+              />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

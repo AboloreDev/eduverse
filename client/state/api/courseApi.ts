@@ -10,22 +10,23 @@ import { api } from "./baseApi";
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    fetchAllCourses: builder.query<CourseResponse<object>, void>({
-      query: () => "/api/v1/project/courses/all",
-      providesTags: ["Courses", "User", "Chapter"],
+    fetchAllCourses: builder.query<CourseResponse<object>, any>({
+      query: ({ page = 1, limit = 5 }) =>
+        `/api/v1/project/courses/all?page=${page}&limit=${limit}`,
+      providesTags: ["Courses"],
     }),
 
     fetchSingleCourse: builder.query<CourseResponse<object>, string>({
       query: (id) => `/api/v1/project/courses/${id}`,
-      providesTags: ["Courses", "User", "Chapter"],
+      providesTags: ["Courses"],
     }),
 
     deleteSingleCourse: builder.mutation<CourseDeleteResponse, string>({
-      query: (id) => ({
-        url: `/api/v1/project/courses/${id}`,
+      query: (courseId) => ({
+        url: `/api/v1/project/courses/${courseId}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Courses", "User", "Chapter"],
+      invalidatesTags: ["Courses"],
     }),
 
     editCourse: builder.mutation<CourseResponse<object>, editCourseRequest>({
@@ -34,7 +35,7 @@ export const courseApi = api.injectEndpoints({
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Courses", "Chapter", "User"],
+      invalidatesTags: ["Courses"],
     }),
   }),
 });

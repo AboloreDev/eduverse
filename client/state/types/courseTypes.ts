@@ -12,10 +12,17 @@ export interface Course {
   slug?: string;
 }
 
+export interface Pagination {
+  total: number;
+  page: number;
+  totalPages: number;
+  limit: number;
+}
 export interface CourseResponse<T> {
   success: boolean;
   message: string;
   data?: Course;
+  pagination?: Pagination;
 }
 
 export interface editCourseRequest {
