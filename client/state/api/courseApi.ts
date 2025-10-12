@@ -5,6 +5,8 @@ import {
   CourseDeleteResponse,
   CourseResponse,
   editCourseRequest,
+  SingleCourse,
+  SingleCourseResponse,
 } from "../types/courseTypes";
 import { api } from "./baseApi";
 
@@ -16,7 +18,7 @@ export const courseApi = api.injectEndpoints({
       providesTags: ["Courses"],
     }),
 
-    fetchSingleCourse: builder.query<CourseResponse<object>, string>({
+    fetchSingleCourse: builder.query<SingleCourseResponse<object>, any>({
       query: (id) => `/api/v1/project/courses/${id}`,
       providesTags: ["Courses"],
     }),

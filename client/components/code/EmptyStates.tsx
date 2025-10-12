@@ -11,7 +11,7 @@ const EmptyStates = ({
 }: {
   title: string;
   description: string;
-  buttonText: string;
+  buttonText?: string;
 }) => {
   return (
     <div className="flex flex-col flex-1 h-full items-center justify-center rounded-md borded-dashed border p-8 text-center animate-in fade-in-50">

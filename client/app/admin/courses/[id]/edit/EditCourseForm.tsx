@@ -28,6 +28,8 @@ import {
   courseLevels,
   courseSchema,
   courseStatus,
+  EditCourseFormData,
+  editCourseSchema,
 } from "@/lib/schemas";
 import { Button, buttonVariants } from "@/components/ui/button";
 import FileUploader from "@/components/code/FileUploads/FileUploader";
@@ -45,9 +47,10 @@ const EditCourseForm = ({
   courseData,
   onSubmitCourse,
 }: EditCourseFormProps) => {
-  const form = useForm<CourseFormData>({
+  const [originalFileKey, setOriginalFileKey] = React.useState("");
+  const form = useForm<EditCourseFormData>({
     // @ts-ignore
-    resolver: zodResolver(courseSchema),
+    resolver: zodResolver(editCourseSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -66,6 +69,7 @@ const EditCourseForm = ({
   useEffect(() => {
     if (courseData?.data) {
       const course = courseData.data;
+      setOriginalFileKey(course.fileKey || "");
       form.reset({
         title: course.title || "",
         description: course.description || "",
@@ -84,11 +88,23 @@ const EditCourseForm = ({
     }
   }, [courseData, form]);
 
+  const handleFormSubmit = (data: EditCourseFormData) => {
+    const submitData = {
+      ...data,
+      fileKey: data.fileKey || originalFileKey,
+    };
+
+    console.log("Form submit data:", submitData); // Debug
+    console.log("FileKey being sent:", submitData.fileKey); // Debug
+
+    onSubmitCourse(submitData);
+  };
+
   return (
     <Form {...form}>
       <form
         //   @ts-ignore
-        onSubmit={form.handleSubmit(onSubmitCourse)}
+        onSubmit={form.handleSubmit(handleFormSubmit)}
         className="space-y-6"
       >
         {/* Course Title */}

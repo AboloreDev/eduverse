@@ -1,6 +1,6 @@
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
-import { courseSchema } from "../schemas/course.schema";
+import { courseSchema, editCourseSchema } from "../schemas/course.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
 import prisma from "../utils/prismaClient";
@@ -46,7 +46,7 @@ export const fetchAllCourses = catchAsyncError(
       if (user.role === "admin") {
         whereCondition = { userId: user.id };
       } else if (user.role === "user") {
-        whereCondition = {};
+        whereCondition = { status: "Published" };
       } else {
         return next(new AppError(`Unauthorized role`, 403));
       }
@@ -140,7 +140,13 @@ export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
                 position: true,
                 videoKey: true,
               },
+              orderBy: {
+                position: "asc",
+              },
             },
+          },
+          orderBy: {
+            position: "asc",
           },
         },
       },
@@ -189,7 +195,7 @@ export const deleteSingleCourse = catchAsyncError(async (req, res, next) => {
 });
 
 export const editCourse = catchAsyncError(async (req, res, next) => {
-  const request = courseSchema.parse(req.body);
+  const request = editCourseSchema.parse(req.body);
   const { id } = req.params;
 
   try {

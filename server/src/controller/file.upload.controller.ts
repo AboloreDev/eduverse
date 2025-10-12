@@ -6,9 +6,6 @@ import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "../utils/s3Client";
-import { courseSchema } from "../schemas/course.schema";
-import prisma from "../utils/prismaClient";
-import { AuthRequest } from "../middleware/isAuthenticated";
 
 dotenv.config();
 
@@ -24,6 +21,7 @@ export const uploadfile = catchAsyncError(async (req, res, next) => {
       Bucket: process.env.AWS_BUCKET_NAME as string,
       ContentType: request.fileType,
       Key: uniqueKey,
+      ACL: "public-read",
     });
 
     const preSignedUrl = await getSignedUrl(S3, command, { expiresIn: 360 });

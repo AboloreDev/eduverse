@@ -24,8 +24,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
-import { useAppDispatch, useAppSelector } from "@/state/redux";
-import { clearUser, setUser } from "@/state/slice/globalSlice";
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
@@ -40,30 +38,9 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector((state) => state.global.user);
-  const { data: userResponse, isLoading } = useGetUserProfileQuery();
-
-  useEffect(() => {
-    const accessToken = localStorage.getItem("accessToken");
-    const refreshToken = localStorage.getItem("refreshToken");
-    const savedUser = localStorage.getItem("user");
-
-    if (!accessToken && !refreshToken) {
-      if (user) {
-        dispatch(clearUser());
-      }
-      return;
-    }
-    if (!user && savedUser) {
-      try {
-        dispatch(setUser(JSON.parse(savedUser)));
-      } catch (error) {
-        console.error("Failed to parse user data:", error);
-        localStorage.removeItem("user");
-      }
-    }
-  }, [user, dispatch]);
+  const { data: userData } = useGetUserProfileQuery();
+  // @ts-ignore
+  const user = userData?.user;
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${
@@ -79,14 +56,21 @@ const Navbar = () => {
     };
   }, [isMobileMenu]);
 
-  const dashboardRoute = user?.role === "admin" ? "/admin" : "/user";
+  const dashboardRoute = user?.role === "admin" ? "/admin" : "/user/courses";
+  const linkTitle = user?.role === "admin" ? "Dashboard" : "Courses";
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md shadow-sm prata-regular">
       <nav className="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 font-bold">
-          <Image src="/company-logo.png" alt="Logo" width={40} height={40} />
+          <Image
+            src="/company-logo.png"
+            alt="Logo"
+            width={40}
+            height={40}
+            priority
+          />
           EduVerse
         </Link>
 
@@ -134,7 +118,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
                     <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>Dashboard</Link>
+                    <Link href={dashboardRoute}>{linkTitle}</Link>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
@@ -208,7 +192,7 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
                     <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>Dashboard</Link>
+                    <Link href={dashboardRoute}>{linkTitle}</Link>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
