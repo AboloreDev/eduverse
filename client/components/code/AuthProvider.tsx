@@ -18,7 +18,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         await refreshToken().unwrap();
       } catch (error) {
-        toast.error("Token refresh failed");
         dispatch(clearUser());
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");

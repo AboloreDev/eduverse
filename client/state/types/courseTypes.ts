@@ -1,5 +1,4 @@
 import { Chapter } from "./chapterTypes";
-import { SingleLesson } from "./lessonTypes";
 import { CourseLevel, CourseStatus } from "./uploadTypes";
 
 export interface Course {
@@ -17,7 +16,7 @@ export interface Course {
 }
 
 export interface SingleCourse {
-  courseId: string;
+  id: string;
   title: string;
   description: string;
   subDescription: string; // JSON string from Tiptap
@@ -29,12 +28,9 @@ export interface SingleCourse {
   status: CourseStatus;
   level: CourseLevel;
   chapters: Chapter[];
-  instructorId?: string;
-  instructorName?: string;
-  enrollmentCount?: number;
-  rating?: number;
   createdAt: string;
   updatedAt: string;
+  payment: { status: string }[];
 }
 
 export interface Pagination {

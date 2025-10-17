@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import {
+  BookIcon,
   ChevronDownIcon,
   LayoutDashboard,
   Loader2,
@@ -27,6 +28,7 @@ import {
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
+import { useAppSelector } from "@/state/redux";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -38,9 +40,11 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
+  const userProfile = useAppSelector((state) => state.global.user);
   const { data: userData } = useGetUserProfileQuery();
+
   // @ts-ignore
-  const user = userData?.user;
+  const user = userProfile || userData?.user;
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${
@@ -56,8 +60,7 @@ const Navbar = () => {
     };
   }, [isMobileMenu]);
 
-  const dashboardRoute = user?.role === "admin" ? "/admin" : "/user/courses";
-  const linkTitle = user?.role === "admin" ? "Dashboard" : "Courses";
+  const dashboardRoute = user?.role === "admin" ? "/admin" : "/user/dashboard";
 
   return (
     <header className="sticky top-0 z-50 backdrop-blur-md shadow-sm prata-regular">
@@ -105,7 +108,7 @@ const Navbar = () => {
                   <ChevronDownIcon size={16} className="opacity-60" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="max-w-64">
+              <DropdownMenuContent className="max-w-64 p-4">
                 <DropdownMenuLabel className="flex min-w-0 flex-col">
                   <span className="text-foreground truncate text-sm font-medium">
                     {user.firstName} {user.lastName}
@@ -117,10 +120,19 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
-                    <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>{linkTitle}</Link>
+                    <BookIcon size={10} />
+                    {user.role === "user" && (
+                      <Link href="/user/courses">Courses</Link>
+                    )}
                   </div>
                 </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <div className="flex gap-3">
+                    <LayoutDashboard size={10} />
+                    <Link href={dashboardRoute}>Dashboard</Link>
+                  </div>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
                     <User size={10} />
@@ -173,13 +185,13 @@ const Navbar = () => {
                   variant="ghost"
                   className="h-auto p-0 hover:bg-transparent flex items-center gap-1"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white">
+                  <div className="w-10 h-10  flex items-center justify-center rounded-full bg-black text-white">
                     {getInitials(user.firstName, user.lastName)}
                   </div>
                   <ChevronDownIcon size={16} className="opacity-60" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="max-w-64">
+              <DropdownMenuContent className="max-w-64 p-4">
                 <DropdownMenuLabel className="flex min-w-0 flex-col">
                   <span className="text-foreground truncate text-sm font-medium">
                     {user.firstName} {user.lastName}
@@ -191,8 +203,16 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
+                    <BookIcon size={10} />
+                    {user.role === "user" && (
+                      <Link href="/user/courses">Courses</Link>
+                    )}
+                  </div>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <div className="flex gap-3">
                     <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>{linkTitle}</Link>
+                    <Link href={dashboardRoute}>Dashboard</Link>
                   </div>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>

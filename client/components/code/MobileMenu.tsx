@@ -7,6 +7,7 @@ import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/state/redux";
+import { useGetUserProfileQuery } from "@/state/api/authApi";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -21,7 +22,11 @@ const navLinks = [
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const pathname = usePathname();
-  const user = useAppSelector((state) => state.global.user);
+  const userProfile = useAppSelector((state) => state.global.user);
+  const { data: userData } = useGetUserProfileQuery();
+
+  // @ts-ignore
+  const user = userProfile || userData?.user;
 
   // Get initials
   const getInitials = (firstName: string, lastName: string) => {

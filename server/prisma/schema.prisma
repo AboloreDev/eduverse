@@ -30,6 +30,12 @@ enum CourseStatus {
   Published
   Archived
 }
+
+enum EnrollmentStatus {
+  Pending
+  Active 
+  Rejected
+}
 model User {
   id                        String     @id @default(uuid())
   email                     String     @unique
@@ -45,6 +51,8 @@ model User {
   resetPasswordOtp           String?
   resetPasswordOtpExpires    DateTime?
   courses          Course[]
+  payment        Enrollment[]
+  stripeCustomerId String?  @unique
 }
 
 model Course {
@@ -59,13 +67,17 @@ model Course {
   subDescription String
   slug String @unique
   status CourseStatus @default(Draft)
-
+  stripePriceId   String? 
   
   createdAt DateTime?  @default(now())
   updatedAt DateTime?  @updatedAt
   User       User?   @relation(fields: [userId], references: [id], onDelete:  Cascade)
   userId     String?
   chapters    Chapter[]
+  payment        Enrollment[]
+
+  @@map("courses")
+
 }
 
 model Chapter {
@@ -96,4 +108,19 @@ model Lesson {
   
   chapter   Chapter?   @relation(fields: [chapterId], references: [id], onDelete: Cascade)
   chapterId String?
+}
+
+model Enrollment {
+  id String @id @default(uuid())
+
+  amount Int
+  status EnrollmentStatus @default(Pending)
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
+    User       User   @relation(fields: [userId], references: [id], onDelete:  Cascade)
+  userId     String
+  course    Course @relation(fields: [courseId], references: [id], onDelete:  Cascade)
+  courseId String
+
+  @@unique([userId, courseId])
 }

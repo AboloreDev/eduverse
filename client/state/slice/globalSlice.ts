@@ -4,11 +4,13 @@ import { User } from "../types/authTypes";
 export interface Global {
   user: User | null;
   showPassword: boolean;
+  accessToken: string | null;
 }
 
 export const initialState: Global = {
   user: null,
   showPassword: false,
+  accessToken: null,
 };
 
 export const globalSlice = createSlice({
@@ -24,9 +26,13 @@ export const globalSlice = createSlice({
     setShowPassword: (state) => {
       state.showPassword = !state.showPassword;
     },
+    setAccessToken: (state, action) => {
+      state.accessToken = action.payload;
+    },
   },
 });
 
-export const { setUser, clearUser, setShowPassword } = globalSlice.actions;
+export const { setUser, clearUser, setShowPassword, setAccessToken } =
+  globalSlice.actions;
 
 export default globalSlice.reducer;

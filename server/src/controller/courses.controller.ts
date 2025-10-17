@@ -4,19 +4,35 @@ import { courseSchema, editCourseSchema } from "../schemas/course.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
 import prisma from "../utils/prismaClient";
+import { stripe } from "../utils/stripe";
 
 export const createCourse = catchAsyncError(
   async (req: AuthRequest, res, next) => {
     const user = req.user!;
-    try {
-      const request = courseSchema.parse(req.body);
+    const request = courseSchema.parse(req.body);
 
-      if (!request) return next(new AppError("All fields are required", 400));
+    if (!request) return next(new AppError("All fields are required", 400));
+
+    try {
+      const stripeProduct = await stripe.products.create({
+        name: request.title,
+        description: request.description,
+        metadata: {
+          slug: request.slug,
+        },
+      });
+
+      const stripePrice = await stripe.prices.create({
+        currency: "ngn",
+        unit_amount: Math.round(request.price * 100), // Convert to cents
+        product: stripeProduct.id,
+      });
 
       const data = await prisma.course.create({
         data: {
           ...request,
           userId: user.id,
+          stripePriceId: stripePrice.id,
         },
       });
 
@@ -149,6 +165,11 @@ export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
             position: "asc",
           },
         },
+        payment: {
+          select: {
+            status: true,
+          },
+        },
       },
     });
 
@@ -207,6 +228,29 @@ export const editCourse = catchAsyncError(async (req, res, next) => {
       return next(new AppError("Course not found", 404));
     }
 
+    // Check if price changed
+    let stripePriceId = course.stripePriceId;
+
+    if (request.price !== course.price) {
+      // Create new price (Stripe doesn't allow updating prices)
+      const stripePrice = await stripe.prices.create({
+        currency: "ngn",
+        unit_amount: Math.round(request.price * 100),
+        product: course.stripePriceId
+          ? ((
+              await stripe.prices.retrieve(course.stripePriceId)
+            ).product as string)
+          : (
+              await stripe.products.create({
+                name: request.title,
+                description: request.description,
+              })
+            ).id,
+      });
+
+      stripePriceId = stripePrice.id;
+    }
+
     const editCourse = await prisma.course.update({
       where: { id: id },
       data: {
@@ -220,6 +264,7 @@ export const editCourse = catchAsyncError(async (req, res, next) => {
         fileKey: request.fileKey,
         slug: request.slug,
         subDescription: request.subDescription,
+        stripePriceId: stripePriceId,
       },
     });
 
