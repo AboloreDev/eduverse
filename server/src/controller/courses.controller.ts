@@ -1,3 +1,4 @@
+import { success } from "zod";
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
 import { courseSchema, editCourseSchema } from "../schemas/course.schema";
@@ -60,7 +61,7 @@ export const fetchAllCourses = catchAsyncError(
       let whereCondition = {};
 
       if (user.role === "admin") {
-        whereCondition = { userId: user.id };
+        whereCondition = { status: "Published" };
       } else if (user.role === "user") {
         whereCondition = { status: "Published" };
       } else {
@@ -116,6 +117,30 @@ export const fetchAllCourses = catchAsyncError(
     }
   }
 );
+
+export const getRecentCourse = catchAsyncError(async (req, res, next) => {
+  const course = await prisma.course.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 5,
+    select: {
+      id: true,
+      title: true,
+      duration: true,
+      fileKey: true,
+      level: true,
+      price: true,
+      slug: true,
+      description: true,
+      status: true,
+    },
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: "Success",
+    data: course,
+  });
+});
 
 export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
   // get the course id from params

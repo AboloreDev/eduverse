@@ -28,6 +28,12 @@ const UserEnrollmentCard = ({ singleCourse }: SingleCourseProps) => {
     (payment) => payment.status === "Active"
   );
 
+  const afterPaymentRoute = () => {
+    if (hasActivePayment) {
+      router.push(`/courses/${courseId}`);
+    }
+  };
+
   // create stripe customer
   const createStripeCustomer = async () => {
     try {
@@ -146,13 +152,7 @@ const UserEnrollmentCard = ({ singleCourse }: SingleCourseProps) => {
 
         <Button
           disabled={isLoading}
-          onClick={() => {
-            if (hasActivePayment) {
-              router.push(`/courses/${courseId}`); // Go to course
-            } else {
-              createStripeCustomer; // Trigger checkout
-            }
-          }}
+          onClick={hasActivePayment ? afterPaymentRoute : createStripeCustomer}
           className="w-full"
         >
           {isLoading ? (

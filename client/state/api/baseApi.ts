@@ -4,6 +4,6 @@ import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
 export const api = createApi({
   baseQuery: baseQueryWithAuth,
   reducerPath: "api",
-  tagTypes: ["Courses", "Chapter", "User", "Lesson"],
+  tagTypes: ["Courses", "Chapter", "User", "Lesson", "Enrollment"],
   endpoints: () => ({}),
 });

@@ -43,12 +43,16 @@ interface CourseProps {
 const CourseCard = ({ course }: CourseProps) => {
   const thumbnailUrl = constructUrl(course.fileKey);
   return (
-    <Card className="group relative">
+    <Card className="group relative p-2">
       {/* Drop down */}
       <div className="absolute top-2 right-2 z-10">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="focus:none ring-0"
+            >
               <MoreVertical size={4} />
             </Button>
           </DropdownMenuTrigger>
@@ -96,7 +100,7 @@ const CourseCard = ({ course }: CourseProps) => {
           </p>
         </div>
 
-        <div className="mt-4 flex items-center gap-x-5">
+        <div className="mt-4 flex flex-col justify-start items-start space-y-2 gap-x-5">
           <div className="flex items-center space-x-2">
             <TimerIcon className="size-6 rounded-md" />
             <p className="text-sm text-slate-500">{course.duration}hr</p>

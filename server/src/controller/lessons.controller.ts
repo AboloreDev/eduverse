@@ -198,3 +198,5 @@ export const updateLesson = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }
 });
+
+export const fetchAllLessons = catchAsyncError(async (req, res, next) => {});

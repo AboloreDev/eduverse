@@ -8,8 +8,15 @@ export const paymentApi = api.injectEndpoints({
         url: `/api/v1/project/courses/${courseId}/payment/`,
         method: "POST",
       }),
+      invalidatesTags: ["Courses", "User", "Enrollment"],
+    }),
+
+    getEnrollmentStats: builder.query({
+      query: () => "/api/v1/project/courses/payment/dashboard-stats",
+      providesTags: ["User", "Enrollment"],
     }),
   }),
 });
 
-export const { useCreateStripeCustomerIdMutation } = paymentApi;
+export const { useCreateStripeCustomerIdMutation, useGetEnrollmentStatsQuery } =
+  paymentApi;

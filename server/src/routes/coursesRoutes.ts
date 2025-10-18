@@ -6,18 +6,21 @@ import {
   editCourse,
   fetchAllCourses,
   fetchSingleCourse,
+  getRecentCourse,
 } from "../controller/courses.controller";
 
 const router = express.Router();
 
 router.post("/create", isAuthenticated, restrictTo("admin"), createCourse);
 
-router.get("/all", isAuthenticated, fetchAllCourses);
+router.get("/all", isAuthenticated, restrictTo("admin"), fetchAllCourses);
 
-router.get("/:id", isAuthenticated, fetchSingleCourse);
+router.get("/recent", isAuthenticated, restrictTo("admin"), getRecentCourse);
 
-router.delete("/:id", isAuthenticated, deleteSingleCourse);
+router.get("/:id", isAuthenticated, restrictTo("admin"), fetchSingleCourse);
 
-router.put("/:id", isAuthenticated, editCourse);
+router.delete("/:id", isAuthenticated, restrictTo("admin"), deleteSingleCourse);
+
+router.put("/:id", isAuthenticated, restrictTo("admin"), editCourse);
 
 export default router;

@@ -1,16 +1,40 @@
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
+"use client";
 
-import data from "./data.json";
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { SectionCards } from "@/components/section-cards";
+import { useGetDashboardStatsQuery } from "@/state/api/authApi";
+import { useGetEnrollmentStatsQuery } from "@/state/api/paymentApi";
+import { useAppSelector } from "@/state/redux";
+import RecentCourses from "./RecentCourses";
+import { Suspense } from "react";
+
 export default function AdminDashboardPage() {
+  const user = useAppSelector((state) => state.global.user);
+  const { data: dashboardStats, isLoading: DashboardStatsLoading } =
+    useGetDashboardStatsQuery(user?.id, {
+      skip: !user,
+      refetchOnMountOrArgChange: true,
+    });
+  const { data: enrollmentChartStats, isLoading: EnrollmentStatsLoading } =
+    useGetEnrollmentStatsQuery(user?.id, {
+      skip: !user,
+      refetchOnMountOrArgChange: true,
+    });
   return (
     <>
-      <SectionCards />
+      <SectionCards
+        dashboardStats={dashboardStats}
+        isLoading={DashboardStatsLoading}
+      />
       <div className="px-4 lg:px-6">
-        <ChartAreaInteractive />
+        <ChartAreaInteractive
+          enrollmentChartStats={enrollmentChartStats}
+          isLoading={EnrollmentStatsLoading}
+        />
       </div>
-      <DataTable data={data} />
+      <Suspense>
+        <RecentCourses user={user} />
+      </Suspense>
     </>
   );
 }

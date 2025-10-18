@@ -54,6 +54,10 @@ export const authApi = api.injectEndpoints({
       query: () => "/api/v1/project/user",
       providesTags: ["User"],
     }),
+    getDashboardStats: builder.query({
+      query: () => "/api/v1/project/user/dashboard-stats",
+      providesTags: ["User", "Courses", "Lesson", "Chapter", "Enrollment"],
+    }),
   }),
 });
 
@@ -64,4 +68,5 @@ export const {
   useLoginUserMutation,
   useRefreshTokenMutation,
   useLazyGetUserProfileQuery,
+  useGetDashboardStatsQuery,
 } = authApi;

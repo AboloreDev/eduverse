@@ -1,6 +1,10 @@
 import express from "express";
 import { isAuthenticated, restrictTo } from "../middleware/isAuthenticated";
-import { createStripeCustomerId } from "../controller/payment.controller";
+import {
+  createStripeCustomerId,
+  getPaymentStats,
+} from "../controller/payment.controller";
+import { getDashboardStats } from "../controller/user.controller";
 
 const router = express.Router();
 
@@ -9,6 +13,13 @@ router.post(
   isAuthenticated,
   restrictTo("user"),
   createStripeCustomerId
+);
+
+router.get(
+  "/payment/dashboard-stats",
+  isAuthenticated,
+  restrictTo("admin"),
+  getPaymentStats
 );
 
 export default router;

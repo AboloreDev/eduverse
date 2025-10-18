@@ -152,3 +152,46 @@ export const createStripeCustomerId = catchAsyncError(
     }
   }
 );
+
+export const getPaymentStats = catchAsyncError(async (req, res, next) => {
+  const thirtyDaysAgo = new Date();
+
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const enrollments = await prisma.enrollment.findMany({
+    where: {
+      createdAt: {
+        gte: thirtyDaysAgo,
+      },
+    },
+    select: { createdAt: true },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const lastThrityDays: { date: string; enrollments: number }[] = [];
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date();
+
+    date.setDate(date.getDate() - i);
+
+    lastThrityDays.push({
+      date: date.toISOString().split("T")[0],
+      enrollments: 0,
+    });
+  }
+
+  enrollments.forEach((enrollment) => {
+    const enrollmentDate = enrollment.createdAt?.toISOString().split("T")[0];
+    const dayIndex = lastThrityDays.findIndex(
+      (day) => day.date === enrollmentDate
+    );
+
+    if (dayIndex !== -1) {
+      lastThrityDays[dayIndex].enrollments++;
+    }
+  });
+  return res.status(200).json({
+    success: true,
+    data: lastThrityDays,
+  });
+});
