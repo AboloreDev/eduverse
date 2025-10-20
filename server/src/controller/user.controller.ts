@@ -4,19 +4,49 @@ import prisma from "../utils/prismaClient";
 import AppError from "../utils/appError";
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
+import { initializeRedisclient } from "../utils/client";
+import { authenticationKeyById } from "../utils/keys";
 
 export const getUserProfile = catchAsyncError(async (req, res, next) => {
-  const user = await prisma.user.findUnique({
-    // @ts-ignore
-    where: { id: req.user.id },
-  });
-  if (!user)
-    return next(new AppError("Unauthorized Request: No token provided", 404));
+  const userId = req.user?.id;
+  if (!userId) {
+    return next(new AppError("Unauthorized: No user ID", 401));
+  }
+  const client = await initializeRedisclient();
+  const authorizationkEY = authenticationKeyById(userId as string);
 
-  // return the response
-  res.status(OK).json({
-    user,
-  });
+  try {
+    // get the user from redis first
+    const cachedUser = await client.get(authorizationkEY);
+
+    if (cachedUser) {
+      return res.status(OK).json({
+        success: true,
+        source: "cache",
+        user: JSON.parse(cachedUser),
+      });
+    }
+
+    // if missed, get from database
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user)
+      return next(new AppError("Unauthorized Request: No token provided", 404));
+
+    // 3. Store in Redis for future requests (cache for 1 hour)
+    await client.setEx(authorizationkEY, 18000, JSON.stringify(user));
+
+    // return the response
+    res.status(OK).json({
+      success: true,
+      source: "database",
+      user,
+    });
+  } catch (error: any) {
+    return next(new AppError(`Failed to fetch profile: ${error.message}`, 500));
+  }
 });
 
 export const getDashboardStats = catchAsyncError(

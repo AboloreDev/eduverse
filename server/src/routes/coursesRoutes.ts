@@ -13,11 +13,11 @@ const router = express.Router();
 
 router.post("/create", isAuthenticated, restrictTo("admin"), createCourse);
 
-router.get("/all", isAuthenticated, restrictTo("admin"), fetchAllCourses);
+router.get("/all", isAuthenticated, fetchAllCourses);
 
 router.get("/recent", isAuthenticated, restrictTo("admin"), getRecentCourse);
 
-router.get("/:id", isAuthenticated, restrictTo("admin"), fetchSingleCourse);
+router.get("/:id", isAuthenticated, fetchSingleCourse);
 
 router.delete("/:id", isAuthenticated, restrictTo("admin"), deleteSingleCourse);
 

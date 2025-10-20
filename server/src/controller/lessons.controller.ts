@@ -1,6 +1,9 @@
+import { OK } from "../constants/statusCodes";
 import { lessonSchema } from "../schemas/lessons.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
+import { initializeRedisclient } from "../utils/client";
+import { singleLessonKeyById } from "../utils/keys";
 import prisma from "../utils/prismaClient";
 
 export const reOrderLessons = catchAsyncError(async (req, res, next) => {
@@ -75,9 +78,15 @@ export const createNewLesson = catchAsyncError(async (req, res, next) => {
 });
 
 export const deleteLesson = catchAsyncError(async (req, res, next) => {
+  const { chapterId, lessonId } = req.params;
   try {
-    const { chapterId, lessonId } = req.params;
-
+    // Clear user cache on logout
+    const client = await initializeRedisclient();
+    const cachedLessonKey = singleLessonKeyById(
+      lessonId as string,
+      chapterId as string
+    );
+    await client.del(cachedLessonKey);
     const chapterWithLessons = await prisma.chapter.findUnique({
       where: { id: chapterId },
       select: {
@@ -141,6 +150,20 @@ export const fetchSingleLessonDetails = catchAsyncError(
     const { courseId, chapterId, lessonId } = req.params;
 
     try {
+      const client = await initializeRedisclient();
+      const singleLessonDetailsCached = singleLessonKeyById(
+        chapterId,
+        lessonId
+      );
+      const cachedResponse = await client.get(singleLessonDetailsCached);
+
+      if (cachedResponse) {
+        return res.status(OK).json({
+          success: true,
+          source: "cache",
+          user: JSON.parse(cachedResponse),
+        });
+      }
       const lesson = await prisma.lesson.findUnique({
         where: { id: lessonId, chapterId: chapterId },
         select: {
@@ -155,6 +178,12 @@ export const fetchSingleLessonDetails = catchAsyncError(
       });
 
       if (!lesson) return next(new AppError(`Lesson not found`, 400));
+
+      await client.setEx(
+        singleLessonDetailsCached,
+        300,
+        JSON.stringify(lesson)
+      );
 
       res.status(200).json({
         success: true,
@@ -198,5 +227,3 @@ export const updateLesson = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }
 });
-
-export const fetchAllLessons = catchAsyncError(async (req, res, next) => {});

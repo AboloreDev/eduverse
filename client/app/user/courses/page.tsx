@@ -20,6 +20,8 @@ const UserCoursePage = () => {
     limit,
   });
 
+  console.log(courses);
+
   const hasCourses = Array.isArray(courses?.data) && courses.data.length > 0;
   const pagination = courses?.pagination;
 

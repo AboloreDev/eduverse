@@ -17,6 +17,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { loginSchema, registerUserSchema } from "../schemas/auth.schema";
 import { catchAsyncError } from "../utils/catchAsync";
 import AppError from "../utils/appError";
+import { initializeRedisclient } from "../utils/client";
+import { authenticationKeyById } from "../utils/keys";
 
 interface MyJwtPayload extends JwtPayload {
   userId: string;
@@ -27,16 +29,15 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
 
   if (!request) return next(new AppError("All fields are required", 400));
 
-  const existingUser = await prisma.user.findUnique({
-    where: { email: request.email },
-  });
-
-  if (existingUser) return next(new AppError("Email already exits", 400));
-
-  const hashedPassword = await hashPassword(request.password, 12);
-  const otp = generateVerificationCode();
-
   try {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: request.email },
+    });
+
+    if (existingUser) return next(new AppError("Email already exits", 400));
+
+    const hashedPassword = await hashPassword(request.password, 12);
+    const otp = generateVerificationCode();
     const user = await prisma.user.create({
       data: {
         firstName: request.firstName,
@@ -71,6 +72,7 @@ export const registerUser = catchAsyncError(async (req, res, next) => {
 
 export const refreshToken = catchAsyncError(async (req, res, next) => {
   const refreshToken = req.cookies.refreshToken;
+  const THIRTY_DAYS = 60 * 60 * 24 * 30;
 
   if (!refreshToken) return next(new AppError("No refresh token", 400));
 
@@ -80,12 +82,28 @@ export const refreshToken = catchAsyncError(async (req, res, next) => {
       process.env.REFRESH_TOKEN_SECRET as string
     ) as MyJwtPayload;
 
-    const user = await prisma.user.findUnique({
-      where: { id: decoded.userId },
-    });
+    const userId = decoded.userId;
+    const client = await initializeRedisclient();
+    const cacheKey = authenticationKeyById(userId as string);
+    const cachedUser = await client.get(cacheKey);
 
-    if (!user) return next(new AppError("User not found", 400));
+    let user;
 
+    if (cachedUser) {
+      user = JSON.parse(cachedUser);
+    } else {
+      user = await prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        return next(new AppError("User not found", 404));
+      }
+
+      await client.setEx(cacheKey, 18000, JSON.stringify(user));
+    }
+
+    // Generate new access token
     const newAccessToken = generateTokenAndSetCookie(res, user.id, user.role);
 
     res.status(OK).json({
@@ -99,7 +117,7 @@ export const refreshToken = catchAsyncError(async (req, res, next) => {
           emailVerified: user.emailVerified,
           role: user.role,
         },
-        newAccessToken,
+        accessToken: newAccessToken,
       },
     });
   } catch (error: any) {
@@ -128,6 +146,11 @@ export const loginUser = catchAsyncError(async (req, res, next) => {
     const accessToken = generateTokenAndSetCookie(res, user.id, user.role);
     const refreshToken = generateRefreshToken(res, user.id, user.role);
 
+    // Cache user profile for future requests
+    const client = await initializeRedisclient();
+    const cacheKey = authenticationKeyById(user.id as string);
+    await client.setEx(cacheKey, 18000, JSON.stringify(user));
+
     res.status(OK).json({
       sucess: true,
       message: "User logged in successfully",
@@ -150,7 +173,12 @@ export const loginUser = catchAsyncError(async (req, res, next) => {
 });
 
 export const logoutUser = catchAsyncError(async (req, res, next) => {
+  const userId = req.user?.id;
   try {
+    // Clear user cache on logout
+    const client = await initializeRedisclient();
+    const cacheKey = authenticationKeyById(userId as string);
+    await client.del(cacheKey);
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: "strict",

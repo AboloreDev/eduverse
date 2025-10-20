@@ -12,13 +12,14 @@ import { useParams } from "next/navigation";
 import React from "react";
 import CourseContentDisplay from "./CourseContentDisplay";
 import UserSingleCourseSkeleton from "@/components/code/UserSingleCourseSkeleton";
-import { Card, CardContent } from "@/components/ui/card";
 import UserEnrollmentCard from "./UserEnrollmentCard";
 
 const UserSingleCourseDetailsPage = () => {
   const { id } = useParams();
   const courseId = id as string;
   const { data: singleCourse, isLoading } = useFetchSingleCourseQuery(courseId);
+
+  console.log(singleCourse);
 
   function SafeRenderDescription({ description }: { description: string }) {
     try {

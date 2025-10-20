@@ -1,6 +1,8 @@
 import { chapterSchema } from "../schemas/chapter.schema";
 import AppError from "../utils/appError";
 import { catchAsyncError } from "../utils/catchAsync";
+import { initializeRedisclient } from "../utils/client";
+import { singleChapterKey } from "../utils/keys";
 import prisma from "../utils/prismaClient";
 
 export const reOrderChapters = catchAsyncError(async (req, res, next) => {
@@ -74,9 +76,15 @@ export const createNewChapter = catchAsyncError(async (req, res, next) => {
 });
 
 export const deleteChapter = catchAsyncError(async (req, res, next) => {
+  const { courseId, chapterId } = req.params;
   try {
-    const { courseId, chapterId } = req.params;
-
+    // Clear user cache on logout
+    const client = await initializeRedisclient();
+    const cachedLessonKey = singleChapterKey(
+      courseId as string,
+      chapterId as string
+    );
+    await client.del(cachedLessonKey);
     const coursesWithChapters = await prisma.course.findUnique({
       where: { id: courseId },
       select: {

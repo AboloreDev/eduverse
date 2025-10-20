@@ -5,6 +5,8 @@ import { catchAsyncError } from "../utils/catchAsync";
 import prisma from "../utils/prismaClient";
 import { stripe } from "../utils/stripe";
 import { aj } from "../utils/arcjet";
+import { initializeRedisclient } from "../utils/client";
+import { paymentStatsKey } from "../utils/keys";
 
 export const createStripeCustomerId = catchAsyncError(
   async (req: AuthRequest, res, next) => {
@@ -154,6 +156,15 @@ export const createStripeCustomerId = catchAsyncError(
 );
 
 export const getPaymentStats = catchAsyncError(async (req, res, next) => {
+  const client = await initializeRedisclient();
+  const cacheKey = paymentStatsKey();
+
+  // Try cache first
+  const cached = await client.get(cacheKey);
+  if (cached) {
+    console.log("✅ Cache HIT - Payment stats from Redis");
+    return res.status(200).json(JSON.parse(cached));
+  }
   const thirtyDaysAgo = new Date();
 
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -190,8 +201,13 @@ export const getPaymentStats = catchAsyncError(async (req, res, next) => {
       lastThrityDays[dayIndex].enrollments++;
     }
   });
-  return res.status(200).json({
+  const response = {
     success: true,
     data: lastThrityDays,
-  });
+  };
+
+  await client.setEx(cacheKey, 3600, JSON.stringify(response));
+  console.log("✅ Payment stats cached");
+
+  return res.status(200).json(response);
 });
