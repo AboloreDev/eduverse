@@ -25,3 +25,11 @@ export const singleChapterKey = (courseId: string, chapterId: string) =>
 export const paymentStatsKey = () => getKeyName("stats", "payments", "30days");
 export const dashboardStatsKey = () =>
   getKeyName("stats", "dashboard", "analytics");
+export const enrolledCoursesKey = (userId: string) =>
+  getKeyName("enrollment", "courses", userId);
+
+export const userEnrolledCourseDetailsKey = (id: string) =>
+  getKeyName("payments", "courseDetails", "paymentDetails", `courseId:${id}`);
+
+export const lessonContentForEnrolledUser = (lessonId: string) =>
+  getKeyName("payments", "lessonDetails", `lessonId:${lessonId}`);

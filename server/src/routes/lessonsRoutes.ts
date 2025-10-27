@@ -3,6 +3,7 @@ import { isAuthenticated, restrictTo } from "../middleware/isAuthenticated";
 import {
   createNewLesson,
   deleteLesson,
+  fetchLessonContentForEnrolledUser,
   fetchSingleLessonDetails,
   reOrderLessons,
   updateLesson,
@@ -36,6 +37,13 @@ router.get(
   isAuthenticated,
   restrictTo("admin"),
   fetchSingleLessonDetails
+);
+
+router.get(
+  "/lessons/:lessonId/content",
+  isAuthenticated,
+  restrictTo("user"),
+  fetchLessonContentForEnrolledUser
 );
 
 router.put(

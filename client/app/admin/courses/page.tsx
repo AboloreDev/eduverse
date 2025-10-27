@@ -7,7 +7,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import CourseCard from "./CourseCard";
 import EmptyStates from "@/components/code/EmptyStates";
-import AdminCourseSkeleton from "@/components/code/AdminCourseSkeleton";
+import AdminCourseSkeleton from "@/components/code/Skeletons/AdminCourseSkeleton";
 
 const CoursesPage = () => {
   const [page, setPage] = useState(1);
@@ -89,6 +89,7 @@ const CoursesPage = () => {
           title="No Courses Found"
           description="Create a new course to get started"
           buttonText="Create Course"
+          href="/admin/courses/create"
         />
       )}
     </div>

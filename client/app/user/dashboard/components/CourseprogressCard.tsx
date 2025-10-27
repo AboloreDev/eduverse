@@ -1,15 +1,18 @@
+"use client";
+
 import React from "react";
-import { Card, CardContent } from "../../../components/ui/card";
-import { Badge } from "../../../components/ui/badge";
 import Image from "next/image";
 import { CourseLevel, CourseStatus } from "@/state/types/uploadTypes";
 import { constructUrl } from "@/hooks/use-construct-url";
-
-import { FileStack, School, Clock, Tag } from "lucide-react";
+import { Tag } from "lucide-react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { useCourseProgress } from "@/hooks/use-course-progress";
+import { Progress } from "@/components/ui/progress";
 
-interface CourseProps {
+export interface CourseProps {
   course: {
     id: string;
     title: string;
@@ -25,17 +28,12 @@ interface CourseProps {
   };
 }
 
-const UsersCourseCard = ({ course }: CourseProps) => {
+const CourseProgressCard = ({ course }: CourseProps) => {
   const thumbnailUrl = constructUrl(course.fileKey);
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "NGN",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(price);
-  };
+  const { totalLessons, completedLessons, progressPercentage } =
+    //@ts-ignore
+    useCourseProgress({ course });
 
   const getLevelColor = (level: CourseLevel) => {
     switch (level) {
@@ -45,19 +43,6 @@ const UsersCourseCard = ({ course }: CourseProps) => {
         return "bg-blue-100 text-blue-800 hover:bg-blue-100";
       case "Advanced":
         return "bg-purple-100 text-purple-800 hover:bg-purple-100";
-      default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100";
-    }
-  };
-
-  const getStatusColor = (status: CourseStatus) => {
-    switch (status) {
-      case "Published":
-        return "bg-emerald-100 text-emerald-800 hover:bg-emerald-100";
-      case "Draft":
-        return "bg-amber-100 text-amber-800 hover:bg-amber-100";
-      case "Archived":
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100";
       default:
         return "bg-gray-100 text-gray-800 hover:bg-gray-100";
     }
@@ -82,13 +67,6 @@ const UsersCourseCard = ({ course }: CourseProps) => {
             {course.category}
           </Badge>
         </div>
-
-        {/* Price Tag - Top Right */}
-        <div className="absolute top-3 right-3">
-          <div className="bg-primary px-3 py-1.5 rounded-full font-bold text-sm shadow-lg">
-            {course.price === 0 ? "Free" : formatPrice(course.price)}
-          </div>
-        </div>
       </div>
 
       <CardContent className="flex flex-col space-y-2 px-4">
@@ -103,24 +81,17 @@ const UsersCourseCard = ({ course }: CourseProps) => {
         </div>
 
         {/* Metadata with Icons */}
-        <div className="flex items-center gap-x-4 pt-2">
-          <div className="flex items-center space-x-1.5">
-            <div className=" p-1 rounded">
-              <Clock className="w-4 h-4 text-blue-600" />
-            </div>
-            <p className="text-sm text-slate-600">{course.duration}hr</p>
+        <div className="space-y-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2">
+            <p>Course Progress:</p>
+            <p className="font-medium">{progressPercentage}% </p>
           </div>
-          <div className="flex items-center space-x-1.5">
-            <div className=" p-1 rounded">
-              <School className="w-4 h-4 text-purple-600" />
-            </div>
-            <p className="text-sm text-slate-600">{course.level}</p>
-          </div>
-          <div className="flex items-center space-x-1.5">
-            <div className="p-1 rounded">
-              <FileStack className="w-4 h-4 text-emerald-600" />
-            </div>
-            <p className="text-sm text-slate-600">{course.status}</p>
+          <Progress value={progressPercentage} className="h-2" />
+          <div className="flex items-center gap-2">
+            <p>Lesson Completed:</p>
+            <p className="font-medium">
+              {completedLessons}/{totalLessons}
+            </p>
           </div>
         </div>
 
@@ -132,12 +103,15 @@ const UsersCourseCard = ({ course }: CourseProps) => {
         </div>
 
         {/* Learn more button */}
-        <Link href={`/user/courses/${course.id}`} className={buttonVariants()}>
-          Learn More
+        <Link
+          href={`/user/dashboard/${course.id}`}
+          className={buttonVariants()}
+        >
+          Continue Watching
         </Link>
       </CardContent>
     </Card>
   );
 };
 
-export default UsersCourseCard;
+export default CourseProgressCard;

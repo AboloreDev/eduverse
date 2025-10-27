@@ -8,10 +8,12 @@ const EmptyStates = ({
   title,
   description,
   buttonText,
+  href,
 }: {
   title: string;
   description: string;
   buttonText?: string;
+  href: string;
 }) => {
   return (
     <div className="flex flex-col flex-1 h-full items-center justify-center rounded-md borded-dashed border p-8 text-center animate-in fade-in-50">
@@ -23,7 +25,7 @@ const EmptyStates = ({
       <h2 className="mb-8 text-center mt-2 leading-tight text-sm font-semibold text-slate-500">
         {description}
       </h2>
-      <Link href={"/admin/courses/create"} className={cn(buttonVariants())}>
+      <Link href={href} className={cn(buttonVariants())}>
         {buttonText}
       </Link>
     </div>

@@ -67,8 +67,12 @@ const RegisterPage = () => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Something went wrong:", error);
-      toast.error("Something went wrong");
+      console.error("Registration error:", error);
+      const errorMessage =
+        (error as { data?: { message?: string } })?.data?.message ||
+        "Something went wrong. Please try again.";
+
+      toast.error(errorMessage);
     }
   };
 

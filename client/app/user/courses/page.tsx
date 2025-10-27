@@ -7,10 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useFetchAllCoursesQuery } from "@/state/api/courseApi";
-import AdminCourseSkeleton from "@/components/code/AdminCourseSkeleton";
 import UsersCourseCard from "./UsersCourseCard";
 import EmptyStates from "@/components/code/EmptyStates";
-import ProtectedRoute from "@/components/code/ProtectedRoutes";
+import AdminCourseSkeleton from "@/components/code/Skeletons/AdminCourseSkeleton";
 
 const UserCoursePage = () => {
   const [page, setPage] = useState(1);
@@ -19,8 +18,6 @@ const UserCoursePage = () => {
     page,
     limit,
   });
-
-  console.log(courses);
 
   const hasCourses = Array.isArray(courses?.data) && courses.data.length > 0;
   const pagination = courses?.pagination;
@@ -108,6 +105,7 @@ const UserCoursePage = () => {
           <EmptyStates
             title="No Courses Found"
             description=" New courses are coming soon. Check back later!"
+            href="/"
           />
         )}
       </Container>

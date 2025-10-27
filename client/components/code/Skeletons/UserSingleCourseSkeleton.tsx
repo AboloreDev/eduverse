@@ -1,7 +1,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import Container from "./Container";
+import Container from "../Container";
 
 const UserSingleCourseSkeleton = () => {
   return (

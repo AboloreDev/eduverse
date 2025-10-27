@@ -5,9 +5,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useGetDashboardStatsQuery } from "@/state/api/authApi";
-import { useAppSelector } from "@/state/redux";
-import { skip } from "node:test";
 import DashboardStatsSkeleton from "./code/DashboardStataSkeleton";
 
 interface SectioncardsProps {

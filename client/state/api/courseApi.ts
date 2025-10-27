@@ -40,8 +40,16 @@ export const courseApi = api.injectEndpoints({
       invalidatesTags: ["Courses"],
     }),
 
-    fetchRecentCourses: builder.query<ApiResponse<object>, any>({
+    fetchRecentCourses: builder.query<ApiResponse<object>, SingleCourse>({
       query: () => `/api/v1/project/courses/recent`,
+      providesTags: ["Courses"],
+    }),
+
+    fetchUserEnrolledCourseDetails: builder.query<
+      SingleCourseResponse<object>,
+      any
+    >({
+      query: (id) => `/api/v1/project/courses/${id}/enrolled`,
       providesTags: ["Courses"],
     }),
   }),
@@ -53,4 +61,5 @@ export const {
   useFetchSingleCourseQuery,
   useEditCourseMutation,
   useFetchRecentCoursesQuery,
+  useFetchUserEnrolledCourseDetailsQuery,
 } = courseApi;

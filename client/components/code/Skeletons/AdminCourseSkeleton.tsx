@@ -1,6 +1,6 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import React from "react";
-import { Card, CardContent } from "../ui/card";
-import { Skeleton } from "../ui/skeleton";
 
 const AdminCourseSkeleton = () => {
   return (

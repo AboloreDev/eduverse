@@ -6,6 +6,7 @@ import {
   editCourse,
   fetchAllCourses,
   fetchSingleCourse,
+  fetchUserEnrolledCourseDetails,
   getRecentCourse,
 } from "../controller/courses.controller";
 
@@ -22,5 +23,12 @@ router.get("/:id", isAuthenticated, fetchSingleCourse);
 router.delete("/:id", isAuthenticated, restrictTo("admin"), deleteSingleCourse);
 
 router.put("/:id", isAuthenticated, restrictTo("admin"), editCourse);
+
+router.get(
+  "/:id/enrolled",
+  isAuthenticated,
+  restrictTo("user"),
+  fetchUserEnrolledCourseDetails
+);
 
 export default router;

@@ -67,6 +67,27 @@ export const lessonsApi = api.injectEndpoints({
       }),
       invalidatesTags: ["Courses", "Chapter", "Lesson"],
     }),
+    fetchUserEnrolledLessonContent: builder.query<
+      SingleLessonResponse<object>,
+      string
+    >({
+      query: (lessonId) =>
+        `/api/v1/project/courses/lessons/${lessonId}/content`,
+      providesTags: ["Courses", "Chapter", "Lesson"],
+    }),
+
+    // update lesson progress mutation
+    updatelessonProgress: builder.mutation<
+      ApiResponse<object>,
+      { lessonId: string; isCompleted: boolean; courseId: string }
+    >({
+      query: ({ isCompleted, lessonId, courseId }) => ({
+        url: `/api/v1/project/courses/${courseId}/lessons/${lessonId}/progress`,
+        method: "PATCH",
+        body: { isCompleted },
+      }),
+      invalidatesTags: ["Courses", "Chapter", "Lesson"],
+    }),
   }),
 });
 
@@ -76,4 +97,6 @@ export const {
   useDeleteLessonMutation,
   useFetchSingleLessonQuery,
   useUpdateLessonMutation,
+  useFetchUserEnrolledLessonContentQuery,
+  useUpdatelessonProgressMutation,
 } = lessonsApi;

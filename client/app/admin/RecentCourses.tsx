@@ -4,15 +4,17 @@ import Link from "next/link";
 import React from "react";
 import EmptyStates from "@/components/code/EmptyStates";
 import CourseCard from "./courses/CourseCard";
-import AdminCourseSkeleton from "@/components/code/AdminCourseSkeleton";
+import AdminCourseSkeleton from "@/components/code/Skeletons/AdminCourseSkeleton";
 
 const RecentCourses = ({ user }: any) => {
   const { data: recentCourses, isLoading } = useFetchRecentCoursesQuery(
     user?.id,
-    { skip: !user, refetchOnMountOrArgChange: true }
+    { skip: !user?.id }
   );
 
-  const courses = recentCourses?.data || [];
+  console.log(recentCourses);
+
+  const courses = recentCourses?.data ?? [];
 
   return (
     <div className="space-y-4 p-2">
@@ -32,7 +34,7 @@ const RecentCourses = ({ user }: any) => {
       ) : // @ts-ignore
       courses.length > 0 ? (
         // Courses List
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-6">
           {/* @ts-ignore */}
           {courses.map((course: any) => (
             <CourseCard key={course.id} course={course} />
@@ -41,9 +43,10 @@ const RecentCourses = ({ user }: any) => {
       ) : (
         // Empty State
         <EmptyStates
-          buttonText="Craete new course"
+          buttonText="Create new course"
           description="You dont have any, create a new one and see them here"
-          title="You don't have ant course yet"
+          title="You don't have any course yet"
+          href="/admin/courses/create"
         />
       )}
     </div>

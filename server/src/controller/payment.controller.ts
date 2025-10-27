@@ -6,7 +6,8 @@ import prisma from "../utils/prismaClient";
 import { stripe } from "../utils/stripe";
 import { aj } from "../utils/arcjet";
 import { initializeRedisclient } from "../utils/client";
-import { paymentStatsKey } from "../utils/keys";
+import { enrolledCoursesKey, paymentStatsKey } from "../utils/keys";
+import { OK } from "../constants/statusCodes";
 
 export const createStripeCustomerId = catchAsyncError(
   async (req: AuthRequest, res, next) => {
@@ -162,7 +163,6 @@ export const getPaymentStats = catchAsyncError(async (req, res, next) => {
   // Try cache first
   const cached = await client.get(cacheKey);
   if (cached) {
-    console.log("✅ Cache HIT - Payment stats from Redis");
     return res.status(200).json(JSON.parse(cached));
   }
   const thirtyDaysAgo = new Date();
@@ -207,7 +207,65 @@ export const getPaymentStats = catchAsyncError(async (req, res, next) => {
   };
 
   await client.setEx(cacheKey, 3600, JSON.stringify(response));
-  console.log("✅ Payment stats cached");
 
   return res.status(200).json(response);
 });
+
+export const getEnrolledCourses = catchAsyncError(
+  async (req: AuthRequest, res, next) => {
+    const user = req.user!;
+    const userId = user.id;
+    try {
+      const userEnrolledCourses = await prisma.enrollment.findMany({
+        where: { status: "Active", userId: userId },
+        select: {
+          id: true,
+          course: {
+            select: {
+              id: true,
+              title: true,
+              category: true,
+              description: true,
+              fileKey: true,
+              level: true,
+              subDescription: true,
+              chapters: {
+                select: {
+                  id: true,
+                  lessons: {
+                    select: {
+                      id: true,
+                      progress: {
+                        where: {
+                          userId: user.id,
+                        },
+                        select: {
+                          isCompleted: true,
+                          lessonId: true,
+                          id: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!userEnrolledCourses)
+        return next(new AppError(`No active enrollment `, 400));
+
+      return res.status(OK).json({
+        success: true,
+        message: "db success",
+        data: userEnrolledCourses,
+      });
+    } catch (error: any) {
+      console.error("Error deleting lessons:", error);
+
+      return next(new AppError(`Something went wrong: ${error.message}`, 500));
+    }
+  }
+);

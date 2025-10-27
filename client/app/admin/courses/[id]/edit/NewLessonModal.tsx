@@ -54,6 +54,7 @@ const NewLessonModal = ({ courseId, chapterId }: NewLessonModalProps) => {
 
   const onSubmit = async (values: LessonFormData) => {
     try {
+      // @ts-ignore
       const response = await createNewLesson(values).unwrap();
 
       if (response.success) {
@@ -67,8 +68,6 @@ const NewLessonModal = ({ courseId, chapterId }: NewLessonModalProps) => {
       toast.error("Something went wrong");
       console.error("Something went wrong", error.data.message);
     }
-
-    console.log(values);
   };
 
   return (

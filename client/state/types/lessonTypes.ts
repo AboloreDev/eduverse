@@ -19,6 +19,10 @@ export interface SingleLesson {
   thumbnailKey: string;
   videoKey: string;
   chapterId?: string;
+  progress: {
+    isCompleted: boolean;
+    lessonId: string;
+  };
 }
 
 export interface SingleLessonResponse<T> {

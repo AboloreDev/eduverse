@@ -63,8 +63,12 @@ const LoginPage = () => {
         toast.error("Login failed");
       }
     } catch (error: any) {
-      console.error("Something went wrong:", error);
-      toast.error("Something went wrong");
+      console.error("Login error:", error);
+
+      const errorMessage =
+        error?.data?.message || error?.message || "Incorrect email or password";
+
+      toast.error(errorMessage);
     }
   };
 

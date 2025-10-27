@@ -78,13 +78,6 @@ export const createNewChapter = catchAsyncError(async (req, res, next) => {
 export const deleteChapter = catchAsyncError(async (req, res, next) => {
   const { courseId, chapterId } = req.params;
   try {
-    // Clear user cache on logout
-    const client = await initializeRedisclient();
-    const cachedLessonKey = singleChapterKey(
-      courseId as string,
-      chapterId as string
-    );
-    await client.del(cachedLessonKey);
     const coursesWithChapters = await prisma.course.findUnique({
       where: { id: courseId },
       select: {

@@ -11,11 +11,12 @@ import coursesRoutes from "./routes/coursesRoutes";
 import lessonsRoutes from "./routes/lessonsRoutes";
 import chapterRoutes from "./routes/chapterRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
+import progressRoutes from "./routes/progressRoutes";
 import { OK } from "./constants/statusCodes";
 import AppError from "./utils/appError";
 import { errorController } from "./utils/errorController";
 import { healthCheck } from "./controller/auth.controller";
-import arcjet, { tokenBucket } from "@arcjet/node";
+
 import { stripeWebhook } from "./controller/webhook.controller";
 
 const globalErrorHandler = errorController;
@@ -58,7 +59,8 @@ app.use("/api/v1/project/file-uploads", fileUploadsRoutes);
 app.use("/api/v1/project/courses", coursesRoutes);
 app.use("/api/v1/project/courses", lessonsRoutes);
 app.use("/api/v1/project/courses", chapterRoutes);
-app.use("/api/v1/project/courses", paymentRoutes);
+app.use("/api/v1/project/payment", paymentRoutes);
+app.use("/api/v1/project/courses", progressRoutes);
 
 app.get("/health", healthCheck);
 app.use((req: Request, res: Response, next: NextFunction) => {

@@ -1,4 +1,4 @@
-import { success } from "zod";
+import { json, success } from "zod";
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
 import { courseSchema, editCourseSchema } from "../schemas/course.schema";
@@ -12,6 +12,7 @@ import {
   coursesKeyById,
   coursesListKey,
   recentCourseListKey,
+  userEnrolledCourseDetailsKey,
 } from "../utils/keys";
 
 export const createCourse = catchAsyncError(
@@ -22,24 +23,6 @@ export const createCourse = catchAsyncError(
     if (!request) return next(new AppError("All fields are required", 400));
 
     try {
-      const client = await initializeRedisclient();
-      const id = nanoid();
-      const coursesKey = coursesKeyById(id);
-      const hashData = {
-        id,
-        name: request.title,
-        description: request.description,
-        subDescription: request.subDescription,
-        category: request.category,
-        price: request.price,
-        duration: request.duration,
-        fileKey: request.fileKey,
-        status: request.status,
-        level: request.level,
-        slug: request.slug,
-      };
-      const addResult = await client.hSet(coursesKey, hashData);
-      console.log(`Added ${addResult} fields`);
       const stripeProduct = await stripe.products.create({
         name: request.title,
         description: request.description,
@@ -83,14 +66,6 @@ export const fetchAllCourses = catchAsyncError(
     const skip = (page - 1) * limit;
 
     try {
-      // Check cache first
-      const client = await initializeRedisclient();
-      const cacheKey = coursesListKey(page, limit, user.role);
-      const cached = await client.get(cacheKey);
-
-      if (cached) {
-        return res.status(200).json(JSON.parse(cached));
-      }
       let whereCondition = {};
       if (user.role === "admin") {
         whereCondition = {};
@@ -143,7 +118,6 @@ export const fetchAllCourses = catchAsyncError(
           totalPages: Math.ceil(totalCount / limit),
         },
       };
-      await client.setEx(cacheKey, 300, JSON.stringify(response));
       return res.status(200).json(response);
     } catch (error: any) {
       console.error("Error fetching courses:", error);
@@ -153,15 +127,21 @@ export const fetchAllCourses = catchAsyncError(
 );
 
 export const getRecentCourse = catchAsyncError(async (req, res, next) => {
+  const user = req.user!;
   const client = await initializeRedisclient();
   const recentList = recentCourseListKey();
   const cached = await client.get(recentList);
 
   if (cached) {
-    return res.status(200).json(JSON.parse(cached));
+    return res.status(200).json({
+      success: true,
+      message: "cache success",
+      data: JSON.parse(cached),
+    });
   }
 
   const course = await prisma.course.findMany({
+    where: { userId: user.id },
     orderBy: { createdAt: "desc" },
     take: 5,
     select: {
@@ -191,17 +171,6 @@ export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    const client = await initializeRedisclient();
-    const singlecourseCachedKey = coursesKeyById(id);
-    const cached = await client.get(singlecourseCachedKey);
-
-    if (cached) {
-      return res.status(OK).json({
-        success: true,
-        message: "success",
-        data: JSON.parse(cached),
-      });
-    }
     const singleCourse = await prisma.course.findUnique({
       where: { id: id },
       select: {
@@ -253,14 +222,7 @@ export const fetchSingleCourse = catchAsyncError(async (req, res, next) => {
       },
     });
 
-    if (!singleCourse) return next(new AppError("No course found", 404));
-
-    // 3. Store in Redis for future requests (cache for 1 hour)
-    await client.setEx(
-      singlecourseCachedKey,
-      300,
-      JSON.stringify(singleCourse)
-    );
+    if (!singleCourse) return next(new AppError("No course found", 400));
 
     return res.status(OK).json({
       success: true,
@@ -278,10 +240,6 @@ export const deleteSingleCourse = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
 
   try {
-    // Clear user cache on logout
-    const client = await initializeRedisclient();
-    const cachedCourseKey = coursesKeyById(id as string);
-    await client.del(cachedCourseKey);
     const course = await prisma.course.findUnique({
       where: { id: id },
     });
@@ -369,3 +327,95 @@ export const editCourse = catchAsyncError(async (req, res, next) => {
     return next(new AppError(`Something went wrong: ${error.message}`, 500));
   }
 });
+
+export const fetchUserEnrolledCourseDetails = catchAsyncError(
+  async (req: AuthRequest, res, next) => {
+    // get the course id from params
+    const { id } = req.params;
+    const user = req.user!;
+
+    try {
+      const enrolledCourseDetails = await prisma.course.findUnique({
+        where: { id: id },
+        select: {
+          id: true,
+          title: true,
+          category: true,
+          description: true,
+          fileKey: true,
+          level: true,
+          status: true,
+          price: true,
+          duration: true,
+          subDescription: true,
+          User: {
+            select: {
+              id: true,
+              firstName: true,
+              email: true,
+            },
+          },
+          chapters: {
+            select: {
+              id: true,
+              title: true,
+              position: true,
+              lessons: {
+                select: {
+                  id: true,
+                  title: true,
+                  description: true,
+                  thumbnailKey: true,
+                  position: true,
+                  videoKey: true,
+                  progress: {
+                    where: {
+                      userId: user.id,
+                    },
+                    select: {
+                      isCompleted: true,
+                      lessonId: true,
+                      id: true,
+                    },
+                  },
+                },
+                orderBy: {
+                  position: "asc",
+                },
+              },
+            },
+            orderBy: {
+              position: "asc",
+            },
+          },
+        },
+      });
+
+      if (!enrolledCourseDetails)
+        return next(new AppError("No course found", 400));
+
+      // After fetching the course details for simplicity lets check if the user is enrolled for the course
+
+      const isEnrolled = await prisma.enrollment.findUnique({
+        where: {
+          userId_courseId: {
+            userId: user.id,
+            courseId: enrolledCourseDetails.id,
+          },
+        },
+      });
+
+      if (!isEnrolled || isEnrolled.status !== "Active")
+        return next(new AppError("Not enrolled", 400));
+
+      return res.status(OK).json({
+        success: true,
+        message: "Success",
+        data: enrolledCourseDetails,
+      });
+    } catch (error: any) {
+      console.error("Error fetching single course:", error);
+      return next(new AppError(`Something went wrong: ${error.message}`, 500));
+    }
+  }
+);

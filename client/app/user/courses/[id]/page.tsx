@@ -11,7 +11,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import React from "react";
 import CourseContentDisplay from "./CourseContentDisplay";
-import UserSingleCourseSkeleton from "@/components/code/UserSingleCourseSkeleton";
+import UserSingleCourseSkeleton from "@/components/code/Skeletons/UserSingleCourseSkeleton";
 import UserEnrollmentCard from "./UserEnrollmentCard";
 
 const UserSingleCourseDetailsPage = () => {
