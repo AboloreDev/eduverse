@@ -38,7 +38,11 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
-  const user = useAppSelector((state) => state.global.user);
+  // const user = useAppSelector((state) => state.global.user);
+  const userData = useGetUserProfileQuery();
+
+  // @ts-ignore
+  const user = userData?.data?.user;
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${
