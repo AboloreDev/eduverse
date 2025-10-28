@@ -1,5 +1,3 @@
-import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
-import { createApi } from "@reduxjs/toolkit/query/react";
 import { ApiResponse } from "../types/authTypes";
 import {
   CourseDeleteResponse,

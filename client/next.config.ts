@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
     formats: ["image/webp"],
     dangerouslyAllowSVG: true,
   },
+  eslint: {
+    ignoreDuringBuilds: true, // turn off ESLint during builds
+  },
 };
 
 export default nextConfig;

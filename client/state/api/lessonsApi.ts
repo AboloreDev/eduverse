@@ -1,5 +1,3 @@
-import { baseQueryWithAuth } from "@/lib/baseQueryWithAuth";
-import { Api, createApi } from "@reduxjs/toolkit/query/react";
 import {
   ReOrderLessonsRequest,
   ReOrderLessonsResponse,

@@ -33,13 +33,12 @@ export interface RefreshTokenResponse {
   };
 }
 
-export interface UpdatedTenantRequest {
+export interface UpdatedUserRequest {
   id: string;
   data: Partial<User>;
 }
 
-// create the updated Tenant response
-export interface UpdatedTenantResponse {
+export interface UpdatedUserResponse {
   success: boolean;
   message: string;
   data: User;
