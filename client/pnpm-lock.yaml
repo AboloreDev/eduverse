@@ -201,9 +201,6 @@ importers:
       eslint-config-next:
         specifier: 15.5.3
         version: 15.5.3(eslint@9.35.0(jiti@2.5.1))(typescript@5.9.2)
-      prisma:
-        specifier: ^6.16.1
-        version: 6.16.1(typescript@5.9.2)
       tailwindcss:
         specifier: ^4
         version: 4.1.13
@@ -3873,10 +3870,13 @@ snapshots:
       empathic: 2.0.0
     transitivePeerDependencies:
       - magicast
+    optional: true
 
-  '@prisma/debug@6.16.1': {}
+  '@prisma/debug@6.16.1':
+    optional: true
 
-  '@prisma/engines-version@6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43': {}
+  '@prisma/engines-version@6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43':
+    optional: true
 
   '@prisma/engines@6.16.1':
     dependencies:
@@ -3884,16 +3884,19 @@ snapshots:
       '@prisma/engines-version': 6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43
       '@prisma/fetch-engine': 6.16.1
       '@prisma/get-platform': 6.16.1
+    optional: true
 
   '@prisma/fetch-engine@6.16.1':
     dependencies:
       '@prisma/debug': 6.16.1
       '@prisma/engines-version': 6.16.0-7.1c57fdcd7e44b29b9313256c76699e91c3ac3c43
       '@prisma/get-platform': 6.16.1
+    optional: true
 
   '@prisma/get-platform@6.16.1':
     dependencies:
       '@prisma/debug': 6.16.1
+    optional: true
 
   '@radix-ui/number@1.1.1': {}
 
@@ -5076,6 +5079,7 @@ snapshots:
       perfect-debounce: 1.0.0
       pkg-types: 2.3.0
       rc9: 2.1.2
+    optional: true
 
   call-bind-apply-helpers@1.0.2:
     dependencies:
@@ -5108,12 +5112,14 @@ snapshots:
   chokidar@4.0.3:
     dependencies:
       readdirp: 4.1.2
+    optional: true
 
   chownr@3.0.0: {}
 
   citty@0.1.6:
     dependencies:
       consola: 3.4.2
+    optional: true
 
   class-variance-authority@0.7.1:
     dependencies:
@@ -5143,9 +5149,11 @@ snapshots:
 
   concat-map@0.0.1: {}
 
-  confbox@0.2.2: {}
+  confbox@0.2.2:
+    optional: true
 
-  consola@3.4.2: {}
+  consola@3.4.2:
+    optional: true
 
   crelt@1.0.6: {}
 
@@ -5231,7 +5239,8 @@ snapshots:
 
   deep-is@0.1.4: {}
 
-  deepmerge-ts@7.1.5: {}
+  deepmerge-ts@7.1.5:
+    optional: true
 
   define-data-property@1.1.4:
     dependencies:
@@ -5247,7 +5256,8 @@ snapshots:
 
   defu@6.1.4: {}
 
-  destr@2.0.5: {}
+  destr@2.0.5:
+    optional: true
 
   detect-libc@2.1.0: {}
 
@@ -5280,7 +5290,8 @@ snapshots:
       domelementtype: 2.3.0
       domhandler: 5.0.3
 
-  dotenv@16.6.1: {}
+  dotenv@16.6.1:
+    optional: true
 
   dunder-proto@1.0.1:
     dependencies:
@@ -5292,10 +5303,12 @@ snapshots:
     dependencies:
       '@standard-schema/spec': 1.0.0
       fast-check: 3.23.2
+    optional: true
 
   emoji-regex@9.2.2: {}
 
-  empathic@2.0.0: {}
+  empathic@2.0.0:
+    optional: true
 
   enhanced-resolve@5.18.3:
     dependencies:
@@ -5608,11 +5621,13 @@ snapshots:
 
   eventemitter3@4.0.7: {}
 
-  exsolve@1.0.7: {}
+  exsolve@1.0.7:
+    optional: true
 
   fast-check@3.23.2:
     dependencies:
       pure-rand: 6.1.0
+    optional: true
 
   fast-deep-equal@3.1.3: {}
 
@@ -5734,6 +5749,7 @@ snapshots:
       node-fetch-native: 1.6.7
       nypm: 0.6.2
       pathe: 2.0.3
+    optional: true
 
   glob-parent@5.1.2:
     dependencies:
@@ -6160,7 +6176,8 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  node-fetch-native@1.6.7: {}
+  node-fetch-native@1.6.7:
+    optional: true
 
   nypm@0.6.2:
     dependencies:
@@ -6169,6 +6186,7 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 2.3.0
       tinyexec: 1.0.1
+    optional: true
 
   object-assign@4.1.1: {}
 
@@ -6212,7 +6230,8 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
-  ohash@2.0.11: {}
+  ohash@2.0.11:
+    optional: true
 
   optionator@0.9.4:
     dependencies:
@@ -6249,9 +6268,11 @@ snapshots:
 
   path-parse@1.0.7: {}
 
-  pathe@2.0.3: {}
+  pathe@2.0.3:
+    optional: true
 
-  perfect-debounce@1.0.0: {}
+  perfect-debounce@1.0.0:
+    optional: true
 
   picocolors@1.1.1: {}
 
@@ -6264,6 +6285,7 @@ snapshots:
       confbox: 0.2.2
       exsolve: 1.0.7
       pathe: 2.0.3
+    optional: true
 
   possible-typed-array-names@1.1.0: {}
 
@@ -6294,6 +6316,7 @@ snapshots:
       typescript: 5.9.2
     transitivePeerDependencies:
       - magicast
+    optional: true
 
   prop-types@15.8.1:
     dependencies:
@@ -6408,7 +6431,8 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  pure-rand@6.1.0: {}
+  pure-rand@6.1.0:
+    optional: true
 
   pvtsutils@1.3.6:
     dependencies:
@@ -6422,6 +6446,7 @@ snapshots:
     dependencies:
       defu: 6.1.4
       destr: 2.0.5
+    optional: true
 
   react-dom@19.1.0(react@19.1.0):
     dependencies:
@@ -6500,7 +6525,8 @@ snapshots:
 
   react@19.1.0: {}
 
-  readdirp@4.1.2: {}
+  readdirp@4.1.2:
+    optional: true
 
   recharts-scale@0.4.5:
     dependencies:
@@ -6799,7 +6825,8 @@ snapshots:
 
   tiny-invariant@1.3.3: {}
 
-  tinyexec@1.0.1: {}
+  tinyexec@1.0.1:
+    optional: true
 
   tinyglobby@0.2.15:
     dependencies:
