@@ -28,8 +28,8 @@ const PORT = Number(process.env.PORT);
 const app = express();
 
 const allowedOrigins = [
-  "http://localhost:3000",
-  "https://eduverse-woad.vercel.app",
+  process.env.FRONTEND_URL as string,
+  process.env.FRONTEND_DEPLOYED_URL as string,
 ];
 
 app.post(
