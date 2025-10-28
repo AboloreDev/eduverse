@@ -218,9 +218,22 @@ const Navbar = () => {
                     )}
                   </div>
                 </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <div className="flex justify-end w-full">
+                    <ThemeToggle />
+                  </div>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
+
+          {!user && (
+            <div>
+              {" "}
+              <ThemeToggle />
+            </div>
+          )}
+
           <button onClick={() => setIsMobileMenu(true)}>
             <Menu className="h-6 w-6 cursor-pointer" />
           </button>

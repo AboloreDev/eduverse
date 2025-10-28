@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { useAppSelector } from "@/state/redux";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -22,18 +23,10 @@ const navLinks = [
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const pathname = usePathname();
-  const userProfile = useAppSelector((state) => state.global.user);
   const { data: userData } = useGetUserProfileQuery();
 
   // @ts-ignore
-  const user = userProfile || userData?.user;
-
-  // Get initials
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.charAt(0) ?? ""}${
-      lastName?.charAt(0) ?? ""
-    }`.toUpperCase();
-  };
+  const user = userData?.data?.user;
 
   useEffect(() => {
     if (isOpen) {
@@ -72,6 +65,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                 <X className="h-6 w-6 cursor-pointer" />
               </button>
             </div>
+
             {navLinks.map((link) => (
               <Link
                 key={link.href}
