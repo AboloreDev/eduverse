@@ -153,14 +153,14 @@ export const logoutUser = catchAsyncError(async (req, res, next) => {
     res.clearCookie("refreshToken", {
       httpOnly: true,
       sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       path: "/",
     });
 
     res.clearCookie("accessToken", {
       httpOnly: true,
       sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
+      secure: true,
       path: "/",
     });
 

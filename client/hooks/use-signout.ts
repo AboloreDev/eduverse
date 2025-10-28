@@ -21,7 +21,6 @@ export function useSignOut() {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       router.push("/");
-      router.refresh();
     } catch (err: any) {
       toast.error(err.data?.message || "Logout failed");
     }
