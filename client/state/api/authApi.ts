@@ -4,6 +4,8 @@ import {
   ApiResponse,
   AuthResponse,
   RefreshTokenResponse,
+  UpdatedUserRequest,
+  UpdatedUserResponse,
   User,
 } from "../types/authTypes";
 import { api } from "./baseApi";
@@ -58,6 +60,14 @@ export const authApi = api.injectEndpoints({
       query: () => "/api/v1/project/user/dashboard-stats",
       providesTags: ["User", "Courses", "Lesson", "Chapter", "Enrollment"],
     }),
+    updateTenant: builder.mutation<UpdatedUserResponse, UpdatedUserRequest>({
+      query: ({ id, data }) => ({
+        url: `/api/v1/project/user/${id}/update`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["User"],
+    }),
   }),
 });
 
@@ -69,4 +79,5 @@ export const {
   useRefreshTokenMutation,
   useLazyGetUserProfileQuery,
   useGetDashboardStatsQuery,
+  useUpdateTenantMutation,
 } = authApi;

@@ -69,7 +69,7 @@ const Features = () => {
 
                   {/* Content */}
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-lg text-black group-hover:text-gray-900">
+                    <h3 className="font-semibold text-lg text-black dark:text-white group-hover:text-gray-900">
                       {feature.title}
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">

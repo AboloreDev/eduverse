@@ -3,6 +3,7 @@ import { isAuthenticated, restrictTo } from "../middleware/isAuthenticated";
 import {
   createStripeCustomerId,
   getEnrolledCourses,
+  getPaymentHistory,
   getPaymentStats,
 } from "../controller/payment.controller";
 
@@ -23,5 +24,7 @@ router.get(
 );
 
 router.get("/", isAuthenticated, getEnrolledCourses);
+
+router.get("/history", isAuthenticated, restrictTo("user"), getPaymentHistory);
 
 export default router;

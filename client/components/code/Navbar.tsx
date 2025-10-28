@@ -10,8 +10,6 @@ import {
   Loader2,
   LogOut,
   Menu,
-  Settings,
-  User,
 } from "lucide-react";
 import MobileMenu from "./MobileMenu";
 import { usePathname } from "next/navigation";
@@ -102,7 +100,7 @@ const Navbar = () => {
                   variant="ghost"
                   className="h-auto p-0 hover:bg-transparent flex items-center gap-1"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black">
                     {getInitials(user.firstName, user.lastName)}
                   </div>
                   <ChevronDownIcon size={16} className="opacity-60" />
@@ -119,12 +117,12 @@ const Navbar = () => {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <BookIcon size={10} />
-                    {user.role === "user" && (
+                  {user.role === "user" && (
+                    <div className="flex gap-3">
+                      <BookIcon size={10} />
                       <Link href="/user/courses">Courses</Link>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <div className="flex gap-3">
@@ -133,18 +131,6 @@ const Navbar = () => {
                   </div>
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <User size={10} />
-                    <Link href="/profile">Profile</Link>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <Settings size={10} />
-                    <Link href="/settings">Settings</Link>
-                  </div>
-                </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutLoading}
@@ -215,18 +201,7 @@ const Navbar = () => {
                     <Link href={dashboardRoute}>Dashboard</Link>
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <User size={10} />
-                    <Link href="/profile">Profile</Link>
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <Settings size={10} />
-                    <Link href="/settings">Settings</Link>
-                  </div>
-                </DropdownMenuItem>
+
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutLoading}

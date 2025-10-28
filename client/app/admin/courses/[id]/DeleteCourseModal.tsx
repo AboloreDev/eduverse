@@ -13,7 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2Icon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useDeleteChapterMutation } from "@/state/api/chaptersApi";
 import { toast } from "sonner";
 import { useDeleteSingleCourseMutation } from "@/state/api/courseApi";
 

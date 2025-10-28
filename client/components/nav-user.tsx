@@ -119,14 +119,22 @@ export function NavUser() {
                   Homepage
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Profile
-              </DropdownMenuItem>
+              {userDetails?.role === "user" && (
+                <>
+                  <DropdownMenuItem asChild>
+                    <Link href={"/user/dashboard/billing"}>
+                      <IconCreditCard />
+                      Billing
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href={"/user/dashboard/profile"}>
+                      <IconNotification />
+                      Profile
+                    </Link>
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>

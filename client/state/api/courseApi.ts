@@ -9,12 +9,22 @@ import {
   SingleCourseResponse,
 } from "../types/courseTypes";
 import { api } from "./baseApi";
+import { url } from "inspector";
 
 export const courseApi = api.injectEndpoints({
   endpoints: (builder) => ({
     fetchAllCourses: builder.query<CourseResponse<object>, any>({
-      query: ({ page = 1, limit = 5 }) =>
-        `/api/v1/project/courses/all?page=${page}&limit=${limit}`,
+      query: ({ search, page = 1, limit = 5 }) => {
+        const params = new URLSearchParams({
+          page: page.toString(),
+          limit: limit.toString(),
+        });
+
+        if (search && search.trim() !== "") {
+          params.append("search", search);
+        }
+        return `/api/v1/project/courses/all?${params.toString()}`;
+      },
       providesTags: ["Courses"],
     }),
 

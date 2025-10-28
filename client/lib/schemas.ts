@@ -87,3 +87,10 @@ export const lessonSchema = z.object({
 });
 
 export type LessonFormData = z.infer<typeof lessonSchema>;
+
+export const settingsSchema = z.object({
+  firstName: z.string().min(1, "FirstName is required"),
+  lastName: z.string().min(1, "lastName is required"),
+  email: z.string().email("Invalid email address"),
+});
+export type SettingsFormData = z.infer<typeof settingsSchema>;

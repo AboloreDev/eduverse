@@ -20,6 +20,11 @@ export const paymentApi = api.injectEndpoints({
       query: () => `/api/v1/project/payment`,
       providesTags: ["User", "Enrollment"],
     }),
+
+    getPaymentHistory: builder.query({
+      query: () => `/api/v1/project/payment/history`,
+      providesTags: ["User", "Enrollment"],
+    }),
   }),
 });
 
@@ -27,4 +32,5 @@ export const {
   useCreateStripeCustomerIdMutation,
   useGetEnrollmentStatsQuery,
   useGetEnrolledCoursesQuery,
+  useGetPaymentHistoryQuery,
 } = paymentApi;

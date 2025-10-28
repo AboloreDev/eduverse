@@ -1,6 +1,5 @@
 "use client";
 
-import { useAppSelector } from "@/state/redux";
 import UserEnrolledCourses from "./UserEnrolledCourses";
 
 export default function DasboardPage() {

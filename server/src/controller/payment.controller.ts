@@ -269,3 +269,33 @@ export const getEnrolledCourses = catchAsyncError(
     }
   }
 );
+
+export const getPaymentHistory = catchAsyncError(async (req, res, next) => {
+  const user = req.user!;
+
+  try {
+    const history = await prisma.enrollment.findMany({
+      where: { userId: user.id },
+      select: {
+        amount: true,
+        status: true,
+        course: true,
+        createdAt: true,
+        id: true,
+      },
+    });
+
+    if (!history) {
+      return next(new AppError(`No payment history found`, 404));
+    }
+
+    res.status(OK).json({
+      success: true,
+      message: "Payment history fetched successfully",
+      data: history,
+    });
+  } catch (error) {
+    console.error("Error fetching payment history:", error);
+    return next(new AppError(`Something went wrong`, 500));
+  }
+});

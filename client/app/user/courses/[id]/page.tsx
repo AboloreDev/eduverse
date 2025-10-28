@@ -116,6 +116,7 @@ const UserSingleCourseDetailsPage = () => {
                       (total, chapter) => total + chapter.lessons.length,
                       0
                     ) || 0}{" "}
+                    {/* @ts-ignore */}
                     {singleCourse?.data?.chapters?.lessons?.length !== 1
                       ? "Lessons"
                       : "Lesson"}

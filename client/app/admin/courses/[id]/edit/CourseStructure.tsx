@@ -32,8 +32,6 @@ import {
   ChevronRight,
   FileText,
   GripVertical,
-  Loader2Icon,
-  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";

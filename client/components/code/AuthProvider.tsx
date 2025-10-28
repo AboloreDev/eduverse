@@ -6,7 +6,6 @@ import { clearUser } from "@/state/slice/globalSlice";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
-import { toast } from "sonner";
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [refreshToken, { isLoading }] = useRefreshTokenMutation();

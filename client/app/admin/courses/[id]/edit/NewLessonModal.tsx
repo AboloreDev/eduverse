@@ -20,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { LessonFormData, lessonSchema } from "@/lib/schemas";
 import { useCreateLessonMutation } from "@/state/api/lessonsApi";
-import { useAppDispatch } from "@/state/redux";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
 import React, { useState } from "react";

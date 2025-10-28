@@ -37,7 +37,7 @@ import {
 } from "@/lib/schemas";
 import { useCreateCourseMutation } from "@/state/api/uploadApi";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, SparklesIcon, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -246,11 +246,11 @@ const CourseCreationPage = () => {
                     name="price"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Price ($) *</FormLabel>
+                        <FormLabel>Price in Naira *</FormLabel>
                         <FormControl>
                           <Input
                             type="number"
-                            placeholder="Price in USD"
+                            placeholder="Price in NGN"
                             {...field}
                             value={field.value || ""}
                             onChange={(e) => {

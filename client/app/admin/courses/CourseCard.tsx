@@ -11,7 +11,6 @@ import {
   Pencil,
   School,
   TimerIcon,
-  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";

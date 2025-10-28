@@ -24,9 +24,7 @@ import { Loader2, SparklesIcon } from "lucide-react";
 import Link from "next/link";
 import Tiptap from "@/components/code/Text Editor/Tiptap";
 import {
-  CourseFormData,
   courseLevels,
-  courseSchema,
   courseStatus,
   EditCourseFormData,
   editCourseSchema,

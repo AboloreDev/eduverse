@@ -5,12 +5,24 @@ export interface Global {
   user: User | null;
   showPassword: boolean;
   accessToken: string | null;
+  filters: FiltersState;
+}
+
+export interface FiltersState {
+  name: string;
+  level: string[];
+  priceRange: [number, number] | [null, null];
 }
 
 export const initialState: Global = {
   user: null,
   showPassword: false,
   accessToken: null,
+  filters: {
+    name: "",
+    level: [],
+    priceRange: [null, null],
+  },
 };
 
 export const globalSlice = createSlice({
@@ -29,10 +41,18 @@ export const globalSlice = createSlice({
     setAccessToken: (state, action) => {
       state.accessToken = action.payload;
     },
+    setFilters: (state, action: PayloadAction<Partial<FiltersState>>) => {
+      state.filters = { ...state.filters, ...action.payload };
+    },
   },
 });
 
-export const { setUser, clearUser, setShowPassword, setAccessToken } =
-  globalSlice.actions;
+export const {
+  setUser,
+  clearUser,
+  setShowPassword,
+  setAccessToken,
+  setFilters,
+} = globalSlice.actions;
 
 export default globalSlice.reducer;

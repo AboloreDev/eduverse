@@ -30,7 +30,7 @@ const UserEnrollmentCard = ({ singleCourse }: SingleCourseProps) => {
 
   const afterPaymentRoute = () => {
     if (hasActivePayment) {
-      router.push(`/courses/${courseId}`);
+      router.push(`/user/dashboard/${courseId}`);
     }
   };
 
@@ -117,6 +117,7 @@ const UserEnrollmentCard = ({ singleCourse }: SingleCourseProps) => {
                     (total, chapter) => total + chapter.lessons.length,
                     0
                   ) || 0}{" "}
+                  {/* @ts-ignore */}
                   {singleCourse?.data?.chapters?.lessons?.length !== 1
                     ? "Lessons"
                     : "Lesson"}

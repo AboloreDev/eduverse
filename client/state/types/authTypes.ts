@@ -32,3 +32,15 @@ export interface RefreshTokenResponse {
     newAccessToken: string;
   };
 }
+
+export interface UpdatedTenantRequest {
+  id: string;
+  data: Partial<User>;
+}
+
+// create the updated Tenant response
+export interface UpdatedTenantResponse {
+  success: boolean;
+  message: string;
+  data: User;
+}

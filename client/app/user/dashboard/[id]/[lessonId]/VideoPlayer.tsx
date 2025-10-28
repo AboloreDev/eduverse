@@ -1,3 +1,5 @@
+"use client";
+
 import { constructUrl } from "@/hooks/use-construct-url";
 import { BookIcon } from "lucide-react";
 import React from "react";
@@ -20,12 +22,20 @@ const VideoPlayer = ({
       </div>
     );
   }
+
   return (
-    <div className="aspect-video bg-black rounded-md overflow-hidden relative">
+    <div className="relative w-full rounded-md overflow-hidden bg-black">
       <video
-        className="w-full h-full object-cover"
+        className="w-full h-auto max-h-[80vh] sm:max-h-[85vh] md:max-h-[90vh] object-contain"
         controls
+        playsInline
+        controlsList="nodownload"
+        preload="metadata"
         poster={thumbnailKey}
+        style={{
+          aspectRatio: "16/9",
+          backgroundColor: "black",
+        }}
       >
         <source src={videoUrl} type="video/mp4" />
         <source src={videoUrl} type="video/webm" />

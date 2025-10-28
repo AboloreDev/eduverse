@@ -12,21 +12,8 @@ export const getUserProfile = catchAsyncError(async (req, res, next) => {
   if (!userId) {
     return next(new AppError("Unauthorized: No user ID", 401));
   }
-  const client = await initializeRedisclient();
-  const authorizationkEY = authenticationKeyById(userId as string);
 
   try {
-    // get the user from redis first
-    const cachedUser = await client.get(authorizationkEY);
-
-    if (cachedUser) {
-      return res.status(OK).json({
-        success: true,
-        source: "cache",
-        user: JSON.parse(cachedUser),
-      });
-    }
-
     // if missed, get from database
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -34,9 +21,6 @@ export const getUserProfile = catchAsyncError(async (req, res, next) => {
 
     if (!user)
       return next(new AppError("Unauthorized Request: No token provided", 404));
-
-    // 3. Store in Redis for future requests (cache for 1 hour)
-    await client.setEx(authorizationkEY, 18000, JSON.stringify(user));
 
     // return the response
     res.status(OK).json({
@@ -87,3 +71,37 @@ export const getDashboardStats = catchAsyncError(
     });
   }
 );
+
+export const updateUser = catchAsyncError(async (req, res, next) => {
+  const { id } = req.params;
+  const { firstName, lastName, email } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: id, role: "user" },
+    });
+
+    if (!user) {
+      return next(new AppError("User not found", 400));
+    }
+    // check and update the tenant
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      },
+    });
+
+    // send a response
+    return res.status(OK).json({
+      success: true,
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+  } catch (error: any) {
+    console.error("Error marking lesson as completed:", error);
+    return next(new AppError(`Failed to update user: ${error.message}`, 500));
+  }
+});

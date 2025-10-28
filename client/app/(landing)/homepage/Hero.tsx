@@ -5,7 +5,7 @@ import { Play, BookOpen, Users, Award, ArrowRight, Star } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="w-full min-h-screen relative overflow-hidden">
+    <div className="w-full h-screen relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
@@ -31,7 +31,7 @@ const Hero = () => {
 
             {/* Main Heading */}
             <div className="space-y-4">
-              <h1 className="text-3xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-3xl lg:text-6xl font-bold text-gray-900 dark:text-gray-200 leading-tight">
                 Master New Skills with <span className="">Expert-Led</span>{" "}
                 Courses
               </h1>

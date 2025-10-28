@@ -1,4 +1,3 @@
-import { json, success } from "zod";
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
 import { courseSchema, editCourseSchema } from "../schemas/course.schema";
@@ -7,13 +6,8 @@ import { catchAsyncError } from "../utils/catchAsync";
 import prisma from "../utils/prismaClient";
 import { stripe } from "../utils/stripe";
 import { initializeRedisclient } from "../utils/client";
-import { nanoid } from "nanoid";
-import {
-  coursesKeyById,
-  coursesListKey,
-  recentCourseListKey,
-  userEnrolledCourseDetailsKey,
-} from "../utils/keys";
+
+import { recentCourseListKey } from "../utils/keys";
 
 export const createCourse = catchAsyncError(
   async (req: AuthRequest, res, next) => {
@@ -63,16 +57,28 @@ export const fetchAllCourses = catchAsyncError(
     const user = req.user!;
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 5;
+    const search = req.query.search as string;
     const skip = (page - 1) * limit;
 
     try {
-      let whereCondition = {};
+      let whereCondition: any = {};
+
       if (user.role === "admin") {
         whereCondition = {};
       } else if (user.role === "user") {
         whereCondition = { status: "Published" };
       } else {
         return next(new AppError(`Unauthorized role`, 403));
+      }
+
+      // Add search functionality
+      if (search && search.trim() !== "") {
+        whereCondition.OR = [
+          { title: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+          { category: { contains: search, mode: "insensitive" } },
+          { subDescription: { contains: search, mode: "insensitive" } },
+        ];
       }
 
       const [courses, totalCount] = await Promise.all([
@@ -109,7 +115,11 @@ export const fetchAllCourses = catchAsyncError(
 
       const response = {
         success: true,
-        message: "Courses fetched successfully",
+        message: search
+          ? `Found ${totalCount} course${
+              totalCount !== 1 ? "s" : ""
+            } matching "${search}"`
+          : "Courses fetched successfully",
         data: courses,
         pagination: {
           total: totalCount,
@@ -118,6 +128,7 @@ export const fetchAllCourses = catchAsyncError(
           totalPages: Math.ceil(totalCount / limit),
         },
       };
+
       return res.status(200).json(response);
     } catch (error: any) {
       console.error("Error fetching courses:", error);
@@ -128,17 +139,6 @@ export const fetchAllCourses = catchAsyncError(
 
 export const getRecentCourse = catchAsyncError(async (req, res, next) => {
   const user = req.user!;
-  const client = await initializeRedisclient();
-  const recentList = recentCourseListKey();
-  const cached = await client.get(recentList);
-
-  if (cached) {
-    return res.status(200).json({
-      success: true,
-      message: "cache success",
-      data: JSON.parse(cached),
-    });
-  }
 
   const course = await prisma.course.findMany({
     where: { userId: user.id },
@@ -156,8 +156,6 @@ export const getRecentCourse = catchAsyncError(async (req, res, next) => {
       status: true,
     },
   });
-
-  await client.setEx(recentList, 300, JSON.stringify(course));
 
   return res.status(200).json({
     success: true,
