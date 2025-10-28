@@ -27,6 +27,11 @@ const PORT = Number(process.env.PORT);
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://eduverse-woad.vercel.app",
+];
+
 app.post(
   "/api/v1/webhook/stripe",
   express.raw({ type: "application/json" }),
@@ -42,7 +47,7 @@ app.use(morgan("common"));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
