@@ -26,7 +26,6 @@ import {
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
-import { useAppSelector } from "@/state/redux";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -38,11 +37,9 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
-  const userProfile = useAppSelector((state) => state.global.user);
   const { data: userData } = useGetUserProfileQuery();
-
   // @ts-ignore
-  const user = userProfile || userData?.user;
+  const user = userData?.user;
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${
