@@ -25,6 +25,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     error,
   } = useGetUserProfileQuery();
 
+  console.log(userResponse);
   useEffect(() => {
     const checkAuth = () => {
       if (isLoading) {

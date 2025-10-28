@@ -4,19 +4,17 @@ import prisma from "../utils/prismaClient";
 import AppError from "../utils/appError";
 import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
-import { initializeRedisclient } from "../utils/client";
-import { authenticationKeyById } from "../utils/keys";
 
 export const getUserProfile = catchAsyncError(async (req, res, next) => {
-  const userId = req.user?.id;
-  if (!userId) {
+  const userData = req.user;
+
+  if (!userData) {
     return next(new AppError("Unauthorized: No user ID", 401));
   }
 
   try {
-    // if missed, get from database
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: userData.id },
     });
 
     if (!user)

@@ -13,15 +13,15 @@ export const generateTokenAndSetCookie = (
     { userId, userRole },
     process.env.ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: "1hr",
+      expiresIn: "3hr",
     }
   );
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 60 * 60 * 1000,
+    sameSite: "none",
+    secure: true,
+    maxAge: 3 * 60 * 60 * 1000,
   });
 
   return accessToken;
