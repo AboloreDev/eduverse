@@ -5,7 +5,7 @@ import { Play, BookOpen, Users, Award, ArrowRight, Star } from "lucide-react";
 
 const Hero = () => {
   return (
-    <div className="w-full h-screen relative overflow-hidden">
+    <div className="w-full h-screen relative overflow-hidden mb-6">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
