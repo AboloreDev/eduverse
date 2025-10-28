@@ -103,8 +103,8 @@ export const createStripeCustomerId = catchAsyncError(
           });
         }
 
-        const successUrl = `${process.env.FRONTEND_URL}/payment/success`;
-        const cancelUrl = `${process.env.FRONTEND_URL}/payment/failure`;
+        const successUrl = `${process.env.FRONTEND_DEPLOYED_URL}/payment/success`;
+        const cancelUrl = `${process.env.FRONTEND_DEPLOYED_URL}/payment/failure`;
 
         const session = await stripe.checkout.sessions.create({
           customer: stripeCustomerId,

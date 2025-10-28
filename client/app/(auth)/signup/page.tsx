@@ -23,7 +23,7 @@ import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { setShowPassword, setUser } from "@/state/slice/globalSlice";
 import PasswordStrengthMeter from "@/utils/PasswordStrengthMeter";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -181,7 +181,14 @@ const RegisterPage = () => {
             <PasswordStrengthMeter password={form.watch("password")} />
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Loading" : "Register"}
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                "Register"
+              )}
             </Button>
           </form>
         </Form>

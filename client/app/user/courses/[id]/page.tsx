@@ -19,8 +19,6 @@ const UserSingleCourseDetailsPage = () => {
   const courseId = id as string;
   const { data: singleCourse, isLoading } = useFetchSingleCourseQuery(courseId);
 
-  console.log(singleCourse);
-
   function SafeRenderDescription({ description }: { description: string }) {
     try {
       const json =
