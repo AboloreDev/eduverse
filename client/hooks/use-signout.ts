@@ -17,13 +17,11 @@ export function useSignOut() {
       toast.success("Logged out successfully!");
       dispatch(clearUser());
       dispatch(authApi.util.resetApiState());
-      dispatch(authApi.util.invalidateTags(["User"]));
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      setTimeout(() => {
-        router.push("/");
-      }, 1000);
+      router.push("/");
+      router.refresh();
     } catch (err: any) {
       toast.error(err.data?.message || "Logout failed");
     }

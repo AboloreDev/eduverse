@@ -40,6 +40,14 @@ export const authApi = api.injectEndpoints({
         method: "POST",
       }),
       invalidatesTags: ["User"],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        try {
+          await queryFulfilled;
+          dispatch(authApi.util.resetApiState());
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
+      },
     }),
 
     refreshToken: builder.mutation<RefreshTokenResponse, void>({
