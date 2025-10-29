@@ -26,6 +26,7 @@ import {
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
+import { useAppSelector } from "@/state/redux";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -37,22 +38,14 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
+  const userProfile = useAppSelector((state) => state.global.user);
 
-  // ✅ Destructure to get 'data' from RTK Query response
-  const {
-    data: userData, // This is { success: true, source: 'database', user: {...} }
-    isLoading,
-    error,
-    refetch,
-  } = useGetUserProfileQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
-    refetchOnReconnect: true,
+  const { data: userData } = useGetUserProfileQuery(undefined, {
+    skip: !!userProfile,
   });
 
-  // ✅ Extract user consistently
   // @ts-ignore
-  const user = userData?.user; // Now works everywhere
+  const user = userProfile || userData?.user;
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${

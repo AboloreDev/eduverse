@@ -8,6 +8,7 @@ import React, { useEffect } from "react";
 import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
+import { useAppSelector } from "@/state/redux";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -22,22 +23,13 @@ const navLinks = [
 
 const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
   const pathname = usePathname();
-
-  // ✅ Same query structure as Navbar
+  const userProfile = useAppSelector((state) => state.global.user);
   const { data: userData } = useGetUserProfileQuery(undefined, {
-    refetchOnMountOrArgChange: true,
-    refetchOnFocus: true,
+    skip: !!userProfile,
   });
 
-  // ✅ Extract user consistently
   // @ts-ignore
-  const user = userData?.user;
-
-  // Debug log
-  useEffect(() => {
-    console.log("Mobile Menu - userData:", userData);
-    console.log("Mobile Menu - user:", user);
-  }, [userData, user]);
+  const user = userProfile || userData?.user;
 
   useEffect(() => {
     if (isOpen) {
