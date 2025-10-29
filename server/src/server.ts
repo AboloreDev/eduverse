@@ -50,7 +50,6 @@ app.use(
 );
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(cookieParser());
 app.use(
   cors({
     origin: allowedOrigins,
@@ -58,6 +57,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.status(OK).json({ status: "healthy" });

@@ -27,7 +27,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     if (isLoading) return;
 
     // Handle authentication errors or token expiry
-    if (isError || !userResponse) {
+    if (!userResponse) {
       toast.error("Session expired. Please login again.");
       router.push("/login");
       return;
@@ -60,7 +60,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
 
   // Show error if auth failed
-  if (isError || !userResponse) {
+  if (!userResponse) {
     return null; // Will redirect to login
   }
 

@@ -35,53 +35,45 @@ export interface AuthRequest extends Request {
   };
 }
 
-export const isAuthenticated = catchAsyncError(
-  async (req: AuthRequest, res, next) => {
-    const token = req.cookies?.accessToken as string;
+// Your protect middleware should look like this:
+export const isAuthenticated = catchAsyncError(async (req, res, next) => {
+  let token;
 
-    if (!token) {
-      return next(new AppError("Unauthorized Request: No token provided", 400));
-    }
-
-    try {
-      const decoded = jwt.verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET as string
-      ) as MyJwtPayload;
-
-      const user = await prisma.user.findUnique({
-        where: { id: decoded.userId },
-        select: {
-          id: true,
-          email: true,
-          firstName: true,
-          lastName: true,
-          role: true,
-          emailVerified: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      });
-
-      if (!user) {
-        return next(new AppError("Invalid token: user not found", 400));
-      }
-
-      req.user = {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role as "user" | "admin",
-        emailVerified: user.emailVerified,
-      };
-
-      next();
-    } catch (error: any) {
-      return next(new AppError(`Server Error: ${error.message}`, 500));
-    }
+  // Check Authorization header FIRST (for mobile with localStorage)
+  if (req.headers.authorization?.startsWith("Bearer")) {
+    token = req.headers.authorization.split(" ")[1];
   }
-);
+  // Fallback to cookie (for desktop)
+  else if (req.cookies.accessToken) {
+    token = req.cookies.accessToken;
+  }
+
+  if (!token) {
+    return next(new AppError("Please login to access this resource", 401));
+  }
+
+  try {
+    const decoded = jwt.verify(
+      token,
+      process.env.ACCESS_TOKEN_SECRET as string
+    );
+
+    const user = await prisma.user.findUnique({
+      // @ts-ignore
+      where: { id: decoded.userId },
+    });
+
+    if (!user) {
+      return next(new AppError("User not found", 401));
+    }
+
+    // @ts-ignore
+    req.user = user;
+    next();
+  } catch (error) {
+    return next(new AppError("Invalid or expired token", 401));
+  }
+});
 
 export const restrictTo = (role: "user" | "admin") => {
   return (req: AuthRequest, res: Response, next: NextFunction) => {
