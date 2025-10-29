@@ -26,7 +26,6 @@ import {
 import { useSignOut } from "@/hooks/use-signout";
 import { ThemeToggle } from "./ThemeToggle";
 import { useGetUserProfileQuery } from "@/state/api/authApi";
-import { useAppSelector } from "@/state/redux";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -38,11 +37,22 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isMobileMenu, setIsMobileMenu] = useState(false);
   const { handleLogout, logoutLoading } = useSignOut();
-  // const user = useAppSelector((state) => state.global.user);
-  const userData = useGetUserProfileQuery();
 
+  // ✅ Destructure to get 'data' from RTK Query response
+  const {
+    data: userData, // This is { success: true, source: 'database', user: {...} }
+    isLoading,
+    error,
+    refetch,
+  } = useGetUserProfileQuery(undefined, {
+    refetchOnMountOrArgChange: true,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
+
+  // ✅ Extract user consistently
   // @ts-ignore
-  const user = userData?.data?.user;
+  const user = userData?.user; // Now works everywhere
 
   const getInitials = (firstName?: string, lastName?: string): string => {
     return `${firstName?.charAt(0) ?? ""}${
@@ -50,7 +60,6 @@ const Navbar = () => {
     }`.toUpperCase();
   };
 
-  // Prevent scrolling when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = isMobileMenu ? "hidden" : "auto";
     return () => {
@@ -116,27 +125,26 @@ const Navbar = () => {
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {user.role === "user" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/user/courses" className="flex gap-3">
+                      <BookIcon size={16} />
+                      <span>Courses</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
-                  {user.role === "user" && (
-                    <div className="flex gap-3">
-                      <BookIcon size={10} />
-                      <Link href="/user/courses">Courses</Link>
-                    </div>
-                  )}
+                  <Link href={dashboardRoute} className="flex gap-3">
+                    <LayoutDashboard size={16} />
+                    <span>Dashboard</span>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>Dashboard</Link>
-                  </div>
-                </DropdownMenuItem>
-
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutLoading}
                 >
                   <div className="flex gap-3">
-                    <LogOut size={10} />
+                    <LogOut size={16} />
                     {logoutLoading ? (
                       <span className="flex items-center gap-2">
                         <Loader2 size={14} className="animate-spin" />
@@ -166,12 +174,13 @@ const Navbar = () => {
         <div className="md:hidden flex items-center gap-3">
           {user && (
             <DropdownMenu>
+              <ThemeToggle />
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
                   className="h-auto p-0 hover:bg-transparent flex items-center gap-1"
                 >
-                  <div className="w-10 h-10  flex items-center justify-center rounded-full bg-black text-white">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-full bg-black text-white dark:bg-white dark:text-black">
                     {getInitials(user.firstName, user.lastName)}
                   </div>
                   <ChevronDownIcon size={16} className="opacity-60" />
@@ -187,27 +196,26 @@ const Navbar = () => {
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {user.role === "user" && (
+                  <DropdownMenuItem asChild>
+                    <Link href="/user/courses" className="flex gap-3">
+                      <BookIcon size={16} />
+                      <span>Courses</span>
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <BookIcon size={10} />
-                    {user.role === "user" && (
-                      <Link href="/user/courses">Courses</Link>
-                    )}
-                  </div>
+                  <Link href={dashboardRoute} className="flex gap-3">
+                    <LayoutDashboard size={16} />
+                    <span>Dashboard</span>
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <div className="flex gap-3">
-                    <LayoutDashboard size={10} />
-                    <Link href={dashboardRoute}>Dashboard</Link>
-                  </div>
-                </DropdownMenuItem>
-
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutLoading}
                 >
                   <div className="flex gap-3">
-                    <LogOut size={10} />
+                    <LogOut size={16} />
                     {logoutLoading ? (
                       <span className="flex items-center gap-2">
                         <Loader2 size={14} className="animate-spin" />
@@ -218,20 +226,8 @@ const Navbar = () => {
                     )}
                   </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <div className="flex justify-end w-full">
-                    <ThemeToggle />
-                  </div>
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-
-          {!user && (
-            <div>
-              {" "}
-              <ThemeToggle />
-            </div>
           )}
 
           <button onClick={() => setIsMobileMenu(true)}>

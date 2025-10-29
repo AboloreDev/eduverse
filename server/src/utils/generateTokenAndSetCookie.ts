@@ -22,6 +22,7 @@ export const generateTokenAndSetCookie = (
     sameSite: "none",
     secure: true,
     maxAge: 3 * 60 * 60 * 1000,
+    path: "/",
   });
 
   return accessToken;
