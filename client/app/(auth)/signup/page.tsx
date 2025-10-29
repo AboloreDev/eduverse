@@ -61,7 +61,9 @@ const RegisterPage = () => {
         localStorage.setItem("refreshToken", response.data.refreshToken);
         dispatch(setUser(response.data.user));
         form.reset();
-        router.push("/");
+        setTimeout(() => {
+          router.push("/");
+        }, 3000);
       } else {
         toast.error("Registration failed");
       }

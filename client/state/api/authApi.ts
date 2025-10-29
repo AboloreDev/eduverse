@@ -61,7 +61,6 @@ export const authApi = api.injectEndpoints({
     getUserProfile: builder.query<User, void>({
       query: () => "/api/v1/project/user",
       providesTags: ["User"],
-      keepUnusedDataFor: 5,
     }),
     getDashboardStats: builder.query({
       query: () => "/api/v1/project/user/dashboard-stats",

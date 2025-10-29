@@ -113,13 +113,7 @@ const MobileMenu = ({ isOpen, onClose }: MobileMenuProps) => {
                   <Button size="sm" onClick={onClose} asChild>
                     <Link href="/login">Login</Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-white text-white hover:bg-white hover:text-black dark:border-black dark:text-black dark:hover:bg-black dark:hover:text-white"
-                    onClick={onClose}
-                    asChild
-                  >
+                  <Button variant="outline" size="sm" onClick={onClose} asChild>
                     <Link href="/signup">Register</Link>
                   </Button>
                 </div>

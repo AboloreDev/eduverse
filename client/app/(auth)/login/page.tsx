@@ -41,7 +41,6 @@ const LoginPage = () => {
       email: "",
       password: "",
     },
-    mode: "onChange",
   });
 
   const handlePasswordToggle = () => {
@@ -58,7 +57,9 @@ const LoginPage = () => {
         localStorage.setItem("refreshToken", response.data.refreshToken);
         dispatch(setUser(response.data.user));
         form.reset();
-        router.push("/");
+        setTimeout(() => {
+          router.push("/");
+        }, 3000);
       } else {
         toast.error("Login failed");
       }

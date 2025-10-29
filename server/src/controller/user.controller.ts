@@ -6,29 +6,26 @@ import { OK } from "../constants/statusCodes";
 import { AuthRequest } from "../middleware/isAuthenticated";
 
 export const getUserProfile = catchAsyncError(async (req, res, next) => {
-  const userData = req.user;
+  // get the user
+  const user = await prisma.user.findUnique({
+    // @ts-ignore
+    where: { id: req.user.id },
+  });
 
-  if (!userData) {
-    return next(new AppError("Unauthorized: No user ID", 401));
+  if (!user) {
+    return next(new AppError("User not found", 400));
   }
 
-  try {
-    const user = await prisma.user.findUnique({
-      where: { id: userData.id },
-    });
-
-    if (!user)
-      return next(new AppError("Unauthorized Request: No token provided", 404));
-
-    // return the response
-    res.status(OK).json({
-      success: true,
-      source: "database",
-      user,
-    });
-  } catch (error: any) {
-    return next(new AppError(`Failed to fetch profile: ${error.message}`, 500));
-  }
+  // return the response
+  res.status(200).json({
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    },
+  });
 });
 
 export const getDashboardStats = catchAsyncError(
